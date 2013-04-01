@@ -75,17 +75,21 @@ or:
 
 You can get more help information of a sub-command by:
 
-    $ spm build -h
+    $ spm install -h
 
 or:
 
-    $ spm help build
+    $ spm help install
 
 Want to write your own plugin? Checkout the [plugin](./plugin.md) section.
 
 ## Build
 
-Build is a **transport** process, it is not a code to binary process.
+Build is a **transport** process, it is not a code to binary process. [grunt-spm-build][] is the built-in building engine. If you have any trouble, create an issute at [grunt-spm-build][].
+
+**NEVER CREATE A BUILD ISSUE IN SPM2, CREATE IT IN GRUNT-SPM-BUILD**.
+
+[grunt-spm-build]: https://github.com/spmjs/grunt-spm-build
 
 For example, we have a package **hello**:
 
