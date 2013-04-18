@@ -1,13 +1,16 @@
-#关于Grunt，从一个简单的配置开始！
+# 关于Grunt，从一个简单的配置开始！
+
 - pubdate: 2013-04-18 15:09
+- author: twinstony
+
 ---
-`author: twinstony`
 
 玩儿转grunt，需要了解的知识稍微多一点，这里仅以一个简单的配置介绍grunt，希望能让你尽快的认识她。
 
 进一步的了解，请移步官网：[Grunt](http://gruntjs.com/ "Grunt")
 
 ## 简介
+
 Q：Grunt为何物？
 
 A：一个专为JavaScript提供的构建工具。
@@ -62,12 +65,12 @@ npm install -g grunt-cli
 
 ```
 "devDependencies": {
-        "grunt": "~0.4.1",
-        "grunt-cmd-transport": "~0.2.0",
-        "grunt-cmd-concat": "~0.2.0",
-        "grunt-contrib-uglify": "~0.2.0",
-        "grunt-contrib-clean": "~0.4.0"
-    }
+    "grunt": "~0.4.1",
+    "grunt-cmd-transport": "~0.2.0",
+    "grunt-cmd-concat": "~0.2.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-clean": "~0.4.0"
+}
 ```
 
 * Gruntfile.js:注意G的大写，这个文件就是`grunt`的配置了，其中详细定义了每个任务的细节和执行任务的顺序等。
@@ -88,11 +91,11 @@ npm install grunt --save-dev
 一个几乎是`Gruntfile.js`通用的写法：
 
 ```
-    module.exports = function(grunt) {
-      grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json');
-      });
-    };
+module.exports = function(grunt) {
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json');
+  });
+};
 ```
 
 由于篇幅关系，这里只简单说下。`grunt`配置的主体都在`grunt.initConfig`中
@@ -102,16 +105,16 @@ npm install grunt --save-dev
 下面我们来了解下任务（task）：
 
 ```
-    transport: {
-            dialog: {
-                files : [
-                    {
-                        src : '*',
-                        dest : '.build/styles/component/dialog/src'
-                    }
-                ]
+transport: {
+    dialog: {
+        files : [
+            {
+                src : '*',
+                dest : '.build/styles/component/dialog/src'
             }
-        }
+        ]
+    }
+}
 ```
 
 `transport`就是一个任务（task），她是这次`spm2`所提供的一系列`grunt`构建插件的其中一个，该插件主要负责提取模块中的依赖，
@@ -121,13 +124,13 @@ npm install grunt --save-dev
 下一个任务是合并(concat)：
 
 ```
-    concat: {
-            dialog: {
-                files: {
-                    "dist/styles/component/dialog/src/dialog.js": [".build/styles/component/dialog/src/dialog.js"]
-                }
-            }
+concat: {
+    dialog: {
+        files: {
+            "dist/styles/component/dialog/src/dialog.js": [".build/styles/component/dialog/src/dialog.js"]
         }
+    }
+}
 ```
 
 `concat`的内容是合并依赖的模块，有很多需要设置的地方，因为本文档目的只是介绍`grunt`，
@@ -136,47 +139,47 @@ npm install grunt --save-dev
 最后，加载`grunt`需要的插件：
 
 ```
-    grunt.loadNpmTasks('grunt-cmd-transport');
-    grunt.loadNpmTasks('grunt-cmd-concat');
+grunt.loadNpmTasks('grunt-cmd-transport');
+grunt.loadNpmTasks('grunt-cmd-concat');
 ```
 
 还要告诉grunt该怎么执行这些任务：
 
 ```
-    grunt.registerTask('build', ['transport', 'concat']);
+grunt.registerTask('build', ['transport', 'concat']);
 ```
 
 完整的`Gruntfile.js`：
 
 ```
-    module.exports = function(grunt) {
-          grunt.initConfig({
-            pkg: grunt.file.readJSON('package.json'),
+module.exports = function(grunt) {
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
 
-            transport: {
-                        dialog: {
-                            files : [
-                                {
-                                    src : '*',
-                                    dest : '.build/styles/component/dialog/src'
-                                }
-                            ]
-                        }
-                    },
-            concat: {
-                        dialog: {
-                            files: {
-                                "dist/styles/component/dialog/src/dialog.js": [".build/styles/component/dialog/src/dialog.js"]
-                            }
-                        }
+        transport: {
+            dialog: {
+                files : [
+                    {
+                        src : '*',
+                        dest : '.build/styles/component/dialog/src'
                     }
-          });
+                ]
+            }
+        },
+        concat: {
+            dialog: {
+                files: {
+                    "dist/styles/component/dialog/src/dialog.js": [".build/styles/component/dialog/src/dialog.js"]
+                }
+            }
+        }
+    });
 
-          grunt.loadNpmTasks('grunt-cmd-transport');
-          grunt.loadNpmTasks('grunt-cmd-concat');
+    grunt.loadNpmTasks('grunt-cmd-transport');
+    grunt.loadNpmTasks('grunt-cmd-concat');
 
-          grunt.registerTask('build', ['transport', 'concat']);
-        };
+    grunt.registerTask('build', ['transport', 'concat']);
+};
 
 ```
 
@@ -187,16 +190,3 @@ grunt build
 ```
 
 一切顺利的话，你就可以看到变化了！
-
-
-
-
-
-
-
-
-
-
-
-
-
