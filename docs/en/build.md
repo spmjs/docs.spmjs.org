@@ -5,8 +5,15 @@
 
 ----------
 
-`spm build` focuses on package build, it is not designed as a build tool.
-It is based on [grunt-spm-build][] which is a collection of grunt tasks.
+`spm build` focuses on package build, it is not designed as a build tool for everything.
+
+It is based on [grunt][] and shipped with some built-in tasks.
+
+[spm-build][] is not published with spm now, you should install it by yourself:
+
+```
+$ npm install spm-build -g
+```
 
 ## Standard Package
 
@@ -52,10 +59,15 @@ module.exports = function(grunt) {
 
 When `spm build`, it will print `customize build`.
 
-Learn more about [grunt-spm-build][], and customize your own build process.
 You can even write your own build tools with the help of our low level api
 [cmd-util](https://github.com/spmjs/cmd-util).
 
+Learn more on these grunt tasks:
+
+- https://github.com/spmjs/grunt-cmd-transport
+- https://github.com/spmjs/grunt-cmd-concat
+- https://github.com/gruntjs/grunt-contrib-uglify
+- https://github.com/gruntjs/grunt-contrib-cssmin
 
 ## Remote Gruntfile
 
@@ -70,4 +82,5 @@ gruntfile = http://your-company.com/gruntfile.js
 
 When `spm build`, it will download the gruntfile, and run the `build` task in this gruntfile.
 
-[grunt-spm-build]: https://github.com/spmjs/grunt-spm-build
+[grunt]: http://gruntjs.org
+[spm-build]: https://github.com/spmjs/spm-build
