@@ -1,7 +1,8 @@
 #关于Grunt，从一个简单的配置开始！
 - pubdate: 2013-04-18 15:09
+- author: twinstony
+
 ---
-`author: twinstony`
 
 玩儿转grunt，需要了解的知识稍微多一点，这里仅以一个简单的配置介绍grunt，希望能让你尽快的认识她。
 
