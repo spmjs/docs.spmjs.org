@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>Transport - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="./">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">开始</li>
+    <li><a href="./index">新手入门</a></li>
+    <li><a href="./environment">Node 环境配置</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">规范标准</li>
+    <li><a href="./spm-global-config">spmrc 配置文件</a></li>
+    <li><a href="./package">Package.json</a></li>
+    <li class="sidebar-current"><a href="./transport">Transport</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">构建</li>
+    <li><a href="./spm-build">标准构建</a></li>
+    <li><a href="./build-task">构建过程详解</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">社区</li>
+    <li><a href="./contribute">如何贡献</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">Transport</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#transport-是什么？">transport 是什么？</a></li><li><a href="#id-规范">id 规范</a></li></ul>
+  </div>
+
+  <div class="entry-content"><h2 id="transport-是什么？">transport 是什么？</h2><p>根据 <a href="https://github.com/seajs/seajs/issues/242">CMD 的模块定义规范</a> 可以定义如下模块</p>
+<div class="highlight"><pre><code class="javascript">define(<span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span> {</span>
+  <span class="keyword">var</span> Base = require(<span class="string">'base'</span>);
+  <span class="keyword">var</span> Widget = Base.extend({
+    ...
+  });
+  module.exports = Widget;
+})</code></pre></div><p>但这样写在线上运行会存在一些问题</p>
+<ol>
+<li><p>无法在一个文件中定义多个模块</p>
+<p>这个问题在 combo 中尤为明显，多个 js 文件被动态合并成一个文件下载下来。</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});
+<span class="comment">// b.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});
+<span class="comment">// c.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});
+
+<span class="comment">// a.js,b.js,c.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});</code></pre></div><p>因为模块是跟 url 一一对应的，所以合并后无法匹配相应的模块了。这个问题可以用添加 id 的方式解决。</p>
+</li>
+<li><p>需要分析代码解析依赖</p>
+<p>seajs 是通过分析 factory 的源码获取依赖的，提取所有的 require 即所有的依赖。但是在线上进行依赖提取是比较耗性能的，可以在构建的时候提前提取依赖。</p>
+<p>构建时提取的依赖是扁平化的，会提取该模块所有的依赖，这样可以先将依赖的所有模块提前下载下来。</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span>{</span>
+  require(<span class="string">'./b'</span>);
+});
+<span class="comment">// b.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span>{</span>
+  require(<span class="string">'./c'</span>);
+});
+<span class="comment">// c.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});
+
+<span class="comment">// 生成的 a.js 会包含 b.js 和 c.js 的依赖</span>
+define(<span class="string">'a'</span>, [<span class="string">'./b'</span>, <span class="string">'./c'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require)</span>{</span>
+  require(<span class="string">'./b'</span>);
+});</code></pre></div></li>
+</ol>
+<p>这些问题在 <a href="https://github.com/seajs/seajs/issues/426">seajs 官网</a>也有说明，所以最后上线的模块应该是 define(id, deps, factory) 这种形式的，对原始的模块进行的转换我们称之为 transport。</p>
+<h2 id="id-规范">id 规范</h2><p>Transport 后每个模块都有自己的标识，即为 id。id 是由 idleading（标准格式为 <code>family/name/version</code>） 和文件名组成的。以下示例的 id 为 <code>arale/base/1.0.0/base</code>。</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// base.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});
+
+<span class="comment">// transport 后的 base.js</span>
+define(<span class="string">'arale/base/1.0.0/base'</span>, [<span class="string">'arale/class/1.0.0/class'</span>,<span class="string">'arale/events/1.0.0/events'</span>,<span class="string">'./aspect'</span>,<span class="string">'./attribute'</span>], <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>});</code></pre></div><p>这个 id 规范会在多处使用</p>
+<ol>
+<li><p>物理存放路径/URL</p>
+<p>base.js 的访问路径为 <a href="http://assets.spmjs.org/arale/base/1.0.1/base.js">http://assets.spmjs.org/arale/base/1.0.1/base.js</a> ，路径中包含 <code>family/name/version</code>。</p>
+</li>
+<li><p>模块的 id</p>
+<p>define 的 id 需要跟 url 匹配，具体如何匹配是根据 seajs 而定的，一般 seajs 会放在根目录(<code>/sea.js</code>，<code>/seajs/sea.js</code>，<code>/seajs/seajs/2.1.1/sea.js</code> 都可以)，所以 base 就为 <a href="http://assets.spmjs.org">http://assets.spmjs.org</a> 。</p>
+<p>&quot;请求的 url&quot; = &quot;seajs 的 base&quot; + &quot;define 的 id&quot;，如</p>
+<p>&quot;<a href="http://assets.spmjs.org/arale/base/1.0.1/base.js">http://assets.spmjs.org/arale/base/1.0.1/base.js</a>&quot; = &quot;<a href="http://assets.spmjs.org">http://assets.spmjs.org</a>&quot; + &quot;/arale/base/1.0.1/base.js&quot;</p>
+</li>
+<li><p>包的 id</p>
+<p>通过 spm 管理模块包，也需要定义 family，name 和 version。如 <a href="https://spmjs.org/arale/base/">https://spmjs.org/arale/base/</a></p>
+</li>
+</ol>
+<p>更多内容可查看<a href="https://github.com/seajs/seajs/issues/930">ID 和路径匹配原则</a>。</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

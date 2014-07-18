@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>grunt - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="./">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">高层 API</li>
+    <li><a href="./index">总述</a></li>
+    <li><a href="./config">spm.config</a></li>
+    <li><a href="./log">spm.log</a></li>
+    <li><a href="./install">spm.install</a></li>
+    <li><a href="./plugin">spm.plugin</a></li>
+    <li><a href="./publish">spm.publish</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">低层 API</li>
+    <li><a href="./sdk">总述</a></li>
+    <li><a href="./yuan">yuan</a></li>
+    <li class="sidebar-current"><a href="./grunt">grunt</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">开发教程</li>
+    <li><a href="./develop-plugin">如何开发一个 SPM 插件</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">grunt</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#invoketask-name-options">invokeTask(name, options)</a></li><li><a href="#loadglobaltasks-name">loadGlobalTasks(name)</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>SPM 对 Grunt 进行了些扩展. 包含 grunt 的所有接口.</p>
+<div class="highlight"><pre><code class="javascript"><span class="keyword">var</span> grunt = require(<span class="string">'spm'</span>).sdk.grunt;</code></pre></div><h2 id="invoketask-name-options">invokeTask(name, options)</h2><p>调用/执行一个 Grunt 任务.</p>
+<div class="highlight"><pre><code class="javascript">grunt.invokeTask(<span class="string">'build'</span>, {
+  fallback: <span class="function"><span class="keyword">function</span><span class="params">(grunt)</span> {</span>
+      console.log(<span class="string">'fallback'</span>)
+  }
+})</code></pre></div><p>它查找本地 Gruntfile.js 中设置的任务, 如果存在, 则会执行. 如果不存在, 则执行 <code>fallback</code> 回调.</p>
+<h2 id="loadglobaltasks-name">loadGlobalTasks(name)</h2><p>加载一个全局模块集合, 这些模块会定义在 <code>NODE_PATH</code> . 类似于 <code>loadNpmTasks</code>.</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

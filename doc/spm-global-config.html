@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>spmrc 配置文件 - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="./">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">开始</li>
+    <li><a href="./index">新手入门</a></li>
+    <li><a href="./environment">Node 环境配置</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">规范标准</li>
+    <li class="sidebar-current"><a href="./spm-global-config">spmrc 配置文件</a></li>
+    <li><a href="./package">Package.json</a></li>
+    <li><a href="./transport">Transport</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">构建</li>
+    <li><a href="./spm-build">标准构建</a></li>
+    <li><a href="./build-task">构建过程详解</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">社区</li>
+    <li><a href="./contribute">如何贡献</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">spmrc 配置文件</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#spmrc">spmrc</a><ul><li><a href="#user">user</a></li><li><a href="#source">source</a></li></ul></li><li><a href="#run-json">run.json</a></li><li><a href="#deps-json">deps.json</a></li><li><a href="#plugins-json">plugins.json</a></li><li><a href="#init">init/</a></li><li><a href="#themes">themes/</a></li><li><a href="#cache">cache/</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>安装好 SPM 之后, 会在用户目录下生成 <code>.spm</code> 目录, 里面包含了各种各样的信息, 在此说明下各个文件/目录的含义.</p>
+<pre>.spm
+| -- spmrc
+| -- deps.json
+| -- plugins.json
+| -- run.json
+| -- init/
+| -- themes/
+` -- cache/</pre><h2 id="spmrc">spmrc</h2><p>spmrc 为 SPM 及其插件所使用的配置文件，文件为 <code>~/.spm/spmrc</code>，可通过<a href="https://github.com/spmjs/spmrc">类库</a>和 <a href="">spm config</a> 进行操作。</p>
+<p>spmrc 是以 ini 形式存储的，结构如下</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[section1]</span>
+<span class="setting">name = <span class="value">property</span></span>
+
+<span class="title">[section2]</span>
+<span class="setting">name = <span class="value">property</span></span></code></pre></div><p>以下会列举一些全局的配置</p>
+<h3 id="user">user</h3><p>可指定一个 gruntfile 的路径，可以配置本地或远程的。</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[user]</span>
+<span class="setting">gruntfile =<span class="value"></span></span></code></pre></div><p>通过 gruntfile 可高度自定义，如</p>
+<ol>
+<li><p>自定义命令</p>
+<p>在 gruntfile 注册一个 task hello，就可以用 spm hello 执行。</p>
+</li>
+<li><p>覆盖原有命令</p>
+<p>在 gruntfile 重置下 build 的任务，可参考 <a href="https://github.com/spmjs/apm/blob/master/Gruntfile.js">apm</a>。</p>
+</li>
+</ol>
+<h3 id="source">source</h3><p>用 source 来指定源，可以指定多个。</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[source:default]</span>
+<span class="setting">url = <span class="value">http://spmjs.org</span></span>
+<span class="setting">auth =<span class="value"></span></span>
+
+<span class="title">[source:alipay]</span>
+<span class="setting">url = <span class="value">http://spmjs.alipay.com</span></span></code></pre></div><p>然后可以通过 -s 指定，使用 default 可不指定，如将模块上传到 alipay 的源</p>
+<pre>spm publish -s alipay</pre><p>任何人都可以从源读取，但是<strong>写操作是要登录的</strong>。先到源上注册账号通过 <a href="">spm login</a> 登录，配置文件中会生成一个 auth 的 token。</p>
+<p>可支持代理</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[source:default]</span>
+<span class="setting">url = <span class="value">http://spmjs.org</span></span>
+<span class="setting">proxy = <span class="value">username:password@proxy.server:port</span></span></code></pre></div><h2 id="run-json">run.json</h2><p>用于统计 SPM 各个命令执行了多少次和最后执行时间.</p>
+<h2 id="deps-json">deps.json</h2><p>存储当前 SPM 依赖的各个模块的版本号, 以便在 <code>spm check</code> 时查找依赖更新.</p>
+<h2 id="plugins-json">plugins.json</h2><p>存储当前安装的所有 SPM 插件信息.</p>
+<h2 id="init">init/</h2><p>存放不同类型模块的模板文件, 主要用于 <code>spm init xxx</code> 时, 从 init/xxx 目录获取配置及模板文件来拷贝.</p>
+<p>每个目录其实是克隆了 <a href="https://github.com/spmjs">https://github.com/spmjs</a> 下 template-xxx 仓库, 所以可以直接 git pull 操作.</p>
+<h2 id="themes">themes/</h2><p>文档生成时使用的不同主题, 目前两套 arale 和 alice.</p>
+<p>arale 克隆的是 <a href="https://github.com/aralejs/nico-arale">https://github.com/aralejs/nico-arale</a> 仓库, alice 克隆的是 <a href="https://github.com/aliceui/nico-alice">https://github.com/aliceui/nico-alice</a> 仓库.</p>
+<h2 id="cache">cache/</h2><p><code>spm install</code> 时临时缓存的模块目录.</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

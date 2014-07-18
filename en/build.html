@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>Build - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">Documentation</li>
+    <li><a href="./index">spm</a></li>
+    <li class="sidebar-current"><a href="./build">Build</a></li>
+    <li><a href="./config">Config</a></li>
+    <li><a href="./install">Install</a></li>
+    <li><a href="./package">package.json</a></li>
+    <li><a href="./plugin">Plugin</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">Build</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#standard-package">Standard Package</a></li><li><a href="#customize-build">Customize Build</a></li><li><a href="#remote-gruntfile">Remote Gruntfile</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p><code>spm build</code> focuses on package build, it is not designed as a build tool for everything.</p>
+<p>It is based on <a href="http://gruntjs.org">grunt</a> and shipped with some built-in tasks.</p>
+<p><a href="https://github.com/spmjs/spm-build">spm-build</a> is not published with spm now, you should install it by yourself:</p>
+<pre>$ npm install spm-build -g</pre><h2 id="standard-package">Standard Package</h2><p>The folder structure of a standard package:</p>
+<pre>package.json
+src/
+    filename.js</pre><p>After <code>spm build</code>, the folder structure:</p>
+<pre>package.json
+src/
+    filename.js
+dist/
+    filename.js
+    filename-debug.js</pre><p>Learn how to write <a href="./package">package.json</a>.</p>
+<h2 id="customize-build">Customize Build</h2><p><code>spm build</code> uses <a href="http://gruntjs.com">grunt</a> as the task manager.
+If you want to customize and control the build process, you need to write
+your own grunt tasks.</p>
+<p><code>spm build</code> will call the <code>build</code> task in your <code>Gruntfile.js</code>.</p>
+<p>An example of <code>Gruntfile.js</code>:</p>
+<div class="highlight"><pre><code class="javascript">module.exports = <span class="function"><span class="keyword">function</span><span class="params">(grunt)</span> {</span>
+    grunt.registerTask(<span class="string">'build'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+        console.log(<span class="string">'customize build'</span>)
+    });
+}</code></pre></div><p>When <code>spm build</code>, it will print <code>customize build</code>.</p>
+<p>You can even write your own build tools with the help of our low level api
+<a href="https://github.com/spmjs/cmd-util">cmd-util</a>.</p>
+<p>Learn more on these grunt tasks:</p>
+<ul>
+<li><a href="https://github.com/spmjs/grunt-cmd-transport">https://github.com/spmjs/grunt-cmd-transport</a></li>
+<li><a href="https://github.com/spmjs/grunt-cmd-concat">https://github.com/spmjs/grunt-cmd-concat</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">https://github.com/gruntjs/grunt-contrib-uglify</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-cssmin">https://github.com/gruntjs/grunt-contrib-cssmin</a></li>
+</ul>
+<h2 id="remote-gruntfile">Remote Gruntfile</h2><p>Remote gruntfile is designed for team collaboration.</p>
+<p>Add a <code>gruntfile</code> config in <code>~/.spm/spmrc</code>:</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[user]</span>
+<span class="setting">gruntfile = <span class="value">http://your-company.com/gruntfile.js</span></span></code></pre></div><p>When <code>spm build</code>, it will download the gruntfile, and run the <code>build</code> task in this gruntfile.</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

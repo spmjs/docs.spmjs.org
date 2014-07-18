@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>spm-install - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">包管理工具</li>
+    <li><a href="./config">spm-config</a></li>
+    <li><a href="./login">spm-login</a></li>
+    <li class="sidebar-current"><a href="./install">spm-install</a></li>
+    <li><a href="./publish">spm-publish</a></li>
+    <li><a href="./unpublish">spm-unpublish</a></li>
+    <li><a href="./info">spm-info</a></li>
+    <li><a href="./help">spm-help</a></li>
+    <li><a href="./plugin">spm-plugin</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">通用插件</li>
+    <li><a href="./build">spm-build</a></li>
+    <li><a href="./init">spm-init</a></li>
+    <li><a href="./status">spm-status</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">支付宝插件</li>
+    <li><a href="./deploy">spm-deploy</a></li>
+    <li><a href="./doc">spm-doc</a></li>
+    <li><a href="./zip">spm-zip</a></li>
+    <li><a href="./doctor">spm-doctor</a></li>
+    <li><a href="./test">spm-test</a></li>
+    <li><a href="./totoro">spm-totoro</a></li>
+    <li><a href="./watch">spm-watch</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">spm-install</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#安装">安装</a></li><li><a href="#使用说明">使用说明</a></li><li><a href="#选项">选项</a><ul><li><a href="#-s-source">-s, --source</a></li><li><a href="#-d-destination">-d, --destination</a></li><li><a href="#-g-global">-g, --global</a></li><li><a href="#-f-force">-f, --force</a></li></ul></li><li><a href="#配置文件">配置文件</a></li></ul>
+  </div>
+
+  <div class="entry-content"><h2 id="安装">安装</h2><pre>npm install spm@2.x -g</pre><h2 id="使用说明">使用说明</h2><p><code>spm install</code> 可以将源上的包下到本地，以 <code>family/name/version</code> 的目录显示 。</p>
+<p>模块名应该为 <code>family/name</code> 的形式，这是 <a href="https://github.com/seajs/seajs/issues/242">CMD 的规范</a>。</p>
+<pre>spm install jquery/jquery</pre><p>会下载到 <code>./sea-modules/jquery/jquery/1.10.1</code></p>
+<p>如果 family 和 name 相同时可以省略其一</p>
+<pre>spm install jquery</pre><p>默认下载的最新版，不过也可以指定版本</p>
+<pre>spm install jquery@1.7.2</pre><p>还有一种特殊情况，模块并不在源上而在本地，这样可以指定一个磁盘路径。执行后会将 dist 下的代码拷贝到目标路径，一般不依赖于源的小型项目会使用。</p>
+<pre>spm install .</pre><h2 id="选项">选项</h2><h3 id="-s-source">-s, --source</h3><p>指定源，详情看 <a href="../doc/spm-global-config#source">配置文档</a>。</p>
+<h3 id="-d-destination">-d, --destination</h3><p>可指定下载目录，默认为 sea-modules。</p>
+<h3 id="-g-global">-g, --global</h3><p>下载到全局，路径为 ~/.spm/sea-modules</p>
+<h3 id="-f-force">-f, --force</h3><p>install 的缓存机制</p>
+<pre>当前路径 ---&gt; (是)不处理
+是否存在  `
+         `-&gt; (否) 缓存和源中的 md5 ---&gt; (是)(缓存不存在) 重新下载
+                   值是否有差异     `
+                                  `-&gt; (否) 取缓存</pre><p>使用 force 选项则不会判断当前路径是否存在，会强制替换当前路径的模块。</p>
+<h2 id="配置文件">配置文件</h2><p>可在 <a href="../doc/spm-global-config#spmrc">spmrc</a> 设置</p>
+<pre>[install]
+; 是否保留 -debug 文件
+debugfile = true
+
+; 下载生成的目录结构，必须以 {{filename}} 结尾
+format = {{family}}/{{name}}/{{version}}/{{filename}}</pre></div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

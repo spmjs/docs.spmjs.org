@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>spm.log - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="./">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">高层 API</li>
+    <li><a href="./index">总述</a></li>
+    <li><a href="./config">spm.config</a></li>
+    <li class="sidebar-current"><a href="./log">spm.log</a></li>
+    <li><a href="./install">spm.install</a></li>
+    <li><a href="./plugin">spm.plugin</a></li>
+    <li><a href="./publish">spm.publish</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">低层 API</li>
+    <li><a href="./sdk">总述</a></li>
+    <li><a href="./yuan">yuan</a></li>
+    <li><a href="./grunt">grunt</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">开发教程</li>
+    <li><a href="./develop-plugin">如何开发一个 SPM 插件</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">spm.log</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#logger-level">logger.level</a></li><li><a href="#logger-config-options">logger.config(options)</a></li><li><a href="#logger-debug-category-formatstring-data">logger.debug(category, formatString, Data)</a></li><li><a href="#logger-info-category-formatstring-data">logger.info(category, formatString, Data)</a></li><li><a href="#logger-warn-category-formatstring-data">logger.warn(category, formatString, Data)</a></li><li><a href="#logger-error-category-formatstring-data">logger.error(category, formatString, Data)</a></li><li><a href="#logger-log-level-messages">logger.log(level, messages)</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>Logger 对象, 提供各种控制台日志输出接口.</p>
+<p><strong>注意: 请尽量使用 spm.log 来输出信息.</strong></p>
+<div class="highlight"><pre><code class="javascript"><span class="keyword">var</span> logger = spm.log;</code></pre></div><h2 id="logger-level">logger.level</h2><p>日志等级, 默认为 <code>&#39;info&#39;</code>, 可取 <code>&#39;debug&#39;</code>, <code>&#39;info&#39;</code>, <code>&#39;warn&#39;</code>, <code>&#39;error&#39;</code>,
+这四种日志类型的重要程度依次递增, 这和日志的通用标准保持一致.</p>
+<p>设置该值后, 当每条日志的等级 &gt;= 该值后才输出至控制台, 小于的则不会输出.</p>
+<h2 id="logger-config-options">logger.config(options)</h2><p>全局配置 logger 对象主要几个配置项:</p>
+<ul>
+<li>options.verbose: [Boolean] 为 true 时, 强制设置 logger.level 为 debug, 即 debug 及其以上的日志都会被输出.</li>
+<li>options.quiet: [Boolean] 为 true 时, 强制设置 logger.level 为 warn, 即 warn 机器以上的日志才会被输出.</li>
+<li>options.color: [Boolean] 为 true 时, 开启颜色标识, 为 false 时, 关闭颜色标识</li>
+</ul>
+<h2 id="logger-debug-category-formatstring-data">logger.debug(category, formatString, Data)</h2><ul>
+<li>category: [String] 信息类别, 在视觉上区分一组信息</li>
+<li>formatString: [String] 格式化字符串</li>
+<li>Data: 数据</li>
+</ul>
+<p>例如:</p>
+<div class="highlight"><pre><code class="javascript">logger.debug(<span class="string">'download'</span>, <span class="string">'filename: %s'</span>, <span class="string">'tmp.js'</span>);</code></pre></div><h2 id="logger-info-category-formatstring-data">logger.info(category, formatString, Data)</h2><p>各参数含义同上.</p>
+<p>例如:</p>
+<div class="highlight"><pre><code class="javascript">logger.info(<span class="string">'download'</span>, <span class="string">'filename: %s'</span>, <span class="string">'tmp1.js'</span>);
+logger.info(<span class="string">'download'</span>, <span class="string">'filename: %s'</span>, <span class="string">'tmp2.js'</span>);</code></pre></div><h2 id="logger-warn-category-formatstring-data">logger.warn(category, formatString, Data)</h2><p>各参数含义同上.</p>
+<p>例如:</p>
+<div class="highlight"><pre><code class="javascript">logger.warn(<span class="string">'delete'</span>, <span class="string">'filename: %s'</span>, <span class="string">'tmp1.js'</span>);
+logger.warn(<span class="string">'delete'</span>, <span class="string">'filename: %s'</span>, <span class="string">'tmp2.js'</span>);</code></pre></div><h2 id="logger-error-category-formatstring-data">logger.error(category, formatString, Data)</h2><p>各参数含义同上.</p>
+<p>例如:</p>
+<div class="highlight"><pre><code class="javascript">logger.error(<span class="string">'delete'</span>, <span class="string">'filename: %s'</span>, <span class="string">'tmp1.js'</span>);
+logger.error(<span class="string">'delete'</span>, <span class="string">'filename: %s'</span>, <span class="string">'tmp2.js'</span>);</code></pre></div><h2 id="logger-log-level-messages">logger.log(level, messages)</h2><ul>
+<li>level: 日志等级, 可取 <code>&#39;debug&#39;</code>, <code>&#39;info&#39;</code>, <code>&#39;warn&#39;</code>, <code>&#39;error&#39;</code>.</li>
+<li>messages: 输出字符串.</li>
+</ul>
+<p>例如:</p>
+<div class="highlight"><pre><code class="javascript">logger.log(<span class="string">'debug'</span>, <span class="string">'this a debug info'</span>);
+logger.log(<span class="string">'info'</span>, <span class="string">'this a regular info'</span>);
+logger.log(<span class="string">'warn'</span>, <span class="string">'this a warning'</span>);
+logger.log(<span class="string">'error'</span>, <span class="string">'this a error'</span>);</code></pre></div><p><strong>注意: 这个是通用接口, 一般请直接使用 <code>logger.debug, logger.info, logger.warn, logger.error</code> 这四个接口.</strong></p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

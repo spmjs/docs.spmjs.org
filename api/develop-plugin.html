@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>如何开发一个 SPM 插件 - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="./">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">高层 API</li>
+    <li><a href="./index">总述</a></li>
+    <li><a href="./config">spm.config</a></li>
+    <li><a href="./log">spm.log</a></li>
+    <li><a href="./install">spm.install</a></li>
+    <li><a href="./plugin">spm.plugin</a></li>
+    <li><a href="./publish">spm.publish</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">低层 API</li>
+    <li><a href="./sdk">总述</a></li>
+    <li><a href="./yuan">yuan</a></li>
+    <li><a href="./grunt">grunt</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">开发教程</li>
+    <li class="sidebar-current"><a href="./develop-plugin">如何开发一个 SPM 插件</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">如何开发一个 SPM 插件</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#插件目录结构">插件目录结构</a></li><li><a href="#插件初始化">插件初始化</a></li><li><a href="#安装插件">安装插件</a></li><li><a href="#卸载插件">卸载插件</a></li></ul>
+  </div>
+
+  <div class="entry-content"><h2 id="插件目录结构">插件目录结构</h2><p>SPM 插件就是一个基本的 nodejs 模块, 目录结构形如:</p>
+<pre>| -- package.json
+| -- index.js
+| -- lib/
+| -- bin/
+| -- scripts/
+| -- tests/</pre><p>你可以自己创建上面的目录结构, 但我们更推荐你使用 <code>spm-init</code> 来初始化插件模板.</p>
+<h2 id="插件初始化">插件初始化</h2><p>第一步, 克隆插件模板到 <code>.spm/init/</code> 中.</p>
+<pre>$ git clone git://github.com/spmjs/template-spmplugin.git ~/.spm/init/spmplugin</pre><p>第二步, 按照 spmplugin 初始化插件目录.</p>
+<pre>$ mkdir test-plugin
+$ cd test-plugin/
+$ spm init spmplugin
+// 之后会有命令行提示你输入插件的基本信息.</pre><h2 id="安装插件">安装插件</h2><p>我们使用了 npm 提供的 <code>postinstall/uninstall</code> 机制, 来管理各个 SPM 插件.</p>
+<p>第一步, 在 <code>package.json</code> 添加 <code>postinstall</code> 设置.</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"scripts"</span>: {
+        <span class="string">"postinstall"</span>: <span class="string">"scripts/postinstall.js"</span>
+    }
+}</code></pre></div><p>第二步, 创建 <code>scripts/postinstall.js</code>.</p>
+<div class="highlight"><pre><code class="javascript">#!<span class="regexp">/usr/</span>bin/env node
+
+<span class="keyword">var</span> spm = require(<span class="string">'spm'</span>)
+spm.plugin.install({
+    name: <span class="string">'init'</span>,
+    binary: <span class="string">'spm-init'</span>,
+    description: <span class="string">'Generate project scaffolding from a template.'</span>
+});</code></pre></div><p>主要是需要将当前插件信息注册到 SPM 中, 是通过 SPM 提供的 plugin 接口, 具体 API 请看 <a href="/api/plugin">spm.plugin</a>.</p>
+<p>第三步, 设置 <code>scripts/postinstall.js</code> 可执行.</p>
+<pre>$ chmod +x scripts/postinstall.js</pre><p>这样, 当你在安装此插件之前, 会先注册到 SPM 中. 这样使用 <code>spm help</code> 之后, 就会列出此插件的用法信息.</p>
+<h2 id="卸载插件">卸载插件</h2><p>和安装插件类似的过程.</p>
+<p>第一步, 在 <code>package.json</code> 添加 <code>uninstall</code> 设置.</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"scripts"</span>: {
+        <span class="string">"uninstall"</span>: <span class="string">"scripts/uninstall.js"</span>
+    }
+}</code></pre></div><p>第二步, 创建 <code>scripts/uninstall.js</code>.</p>
+<div class="highlight"><pre><code class="javascript">#!<span class="regexp">/usr/</span>bin/env node
+
+<span class="keyword">var</span> spm = require(<span class="string">'spm'</span>)
+spm.plugin.uninstall(<span class="string">'init'</span>)</code></pre></div><p>主要是需要将当前插件卸载.</p>
+<p>第三步, 设置 <code>scripts/uninstall.js</code> 可执行.</p>
+<pre>$ chmod +x scripts/uninstall.js</pre><p>这样, 当你在卸载此插件时, 也会同步在 SPM 的插件信息中删除.</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

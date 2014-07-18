@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>spm - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">spm</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#帮助">帮助</a></li><li><a href="#构建">构建</a></li><li><a href="#安装">安装</a></li><li><a href="#注册与登录">注册与登录</a></li><li><a href="#发布你的模块">发布你的模块</a></li><li><a href="#搜索">搜索</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>使用 npm 安装：</p>
+<pre>$ npm install spm@2.x -g
+
+</pre><p>记得一定要加上 <code>-g</code>，这样才能全局可访问。</p>
+<p>如果你想尝试最新的开发版，可安装：</p>
+<pre>$ npm install spm@ninja -g
+
+</pre><p>你还可以从 <a href="http://github.com/spmjs/spm2">github</a> 上获取源码安装。</p>
+<p>现在来尝试一下 <code>spm</code>：</p>
+<pre>$ spm
+
+</pre><p>如果你没有设置过 <code>NODE_PATH</code>，spm 将会提醒你设置 <code>NODE_PATH</code>：</p>
+<pre>Please set environment variable NODE_PATH in ~/.zshrc:
+
+    export NODE_PATH=/usr/local/share/npm/lib/node_modules</pre><p>Windows 用户请设置环境变量 <code>NODE_PATH</code>。</p>
+<h2 id="帮助">帮助</h2><p>下面介绍一下 spm 自带的命令，除了自身的命令外，你还可以安装扩展来增加命令。我们先看一下帮助信息：</p>
+<pre>$ spm -h
+
+</pre><p>或者：</p>
+<pre>$ spm help
+
+</pre><p>获取子命令的帮助信息：</p>
+<pre>$ spm install -h
+
+</pre><p>或者：</p>
+<pre>$ spm help install
+
+
+</pre><h2 id="构建">构建</h2><p>spm 使用 <a href="http://github.com/spmjs/grunt-spm-build">grunt-spm-build</a> 作为构建工具，spm 只做标准的可发布的包的打包工作，任何有关构建的问题请在 <a href="http://github.com/spmjs/grunt-spm-build">grunt-spm-build</a> 里提 issue。</p>
+<p><strong>请不要在 spm 里提构建相关的 issue，spm 不是构建工具</strong></p>
+<p>下面介绍一下标准包的打包，例如我们有一个 <strong>hello</strong> 的包：</p>
+<pre>package.json
+src/
+    hello.js</pre><p>其中 <code>hello.js</code> 的源码假设为：</p>
+<div class="highlight"><pre><code class="javascript">define(<span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span> {</span>
+    exports.name = <span class="string">'hello'</span>
+    exports.Class = require(<span class="string">'class'</span>)
+})</code></pre></div><p><code>package.json</code> 的内容为：</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"family"</span>: <span class="string">"lepture"</span>,
+    <span class="string">"name"</span>: <span class="string">"hello"</span>,
+    <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+    <span class="string">"description"</span>: <span class="string">"hello spm"</span>,
+    <span class="string">"spm"</span>: {
+        <span class="string">"alias"</span>: {
+            <span class="string">"class"</span>: <span class="string">"arale/class/1.0.0/class"</span>
+        },
+        <span class="string">"output"</span>: [<span class="string">"hello.js"</span>]
+    }
+}</code></pre></div><p>现在我们来安装依赖，和构建 <code>hello</code> 这个包：</p>
+<pre>$ spm install
+$ spm build
+
+</pre><p>经过 build 后，我们的 <code>hello.js</code> 将会包含 id 和依赖关系：</p>
+<div class="highlight"><pre><code class="javascript">define(<span class="string">'lepture/hello/1.0.0/hello'</span>, [<span class="string">'arale/class/1.0.0/class'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span> {</span>
+    exports.name = <span class="string">'hello'</span>
+    exports.Class = require(<span class="string">'arale/class/1.0.0/class'</span>)
+})</code></pre></div><p>目录结构将会变成：</p>
+<pre>package.json
+src/
+    hello.js
+dist/
+    hello.js
+    hello-debug.js</pre><h2 id="安装">安装</h2><p>你已经在构建这一环节里使用过 <code>spm install</code> 了，更多关于 <code>install</code> 的信息可查看帮助：</p>
+<pre>$ spm help install
+
+
+</pre><h2 id="注册与登录">注册与登录</h2><p>你可以在 <a href="https://spmjs.org">spmjs.org</a> 上注册一个账户，也可以使用 <code>spm login</code> 来注册：</p>
+<pre>$ spm login
+
+do you have an account? (Y/n)
+
+</pre><p>如果你回答 <code>n</code> 的话，你就可以注册了：</p>
+<pre>do you have an account? (Y/n) n
+
+username:
+email:
+password:
+
+</pre><p>如果你回答 <code>y</code>，<code>spm</code> 将会引导你去登录。</p>
+<h2 id="发布你的模块">发布你的模块</h2><p>我们需要你的贡献，将自己引以为傲的模块发布到 spmjs.org 上吧。</p>
+<p>你已经在 spmjs.org 上注册了自己的账号，并且已使用 <code>spm login</code> 登录了。将 <code>pakcage.json</code> 中的 <code>family</code> 换成你的账户名，例如我的是 <code>lepture</code>。</p>
+<p>然后我们重新构建一次：</p>
+<pre>$ spm build
+
+</pre><p>现在把这个模块发布到出去：</p>
+<pre>$ spm publish
+
+</pre><p>更多帮助信息请查看：</p>
+<pre>$ spm help publish
+
+</pre><p>如果你不小心发布了一个错误的版本，你可以重新发布一个新的模块来代替它：</p>
+<pre>$ spm publish -f
+
+</pre><p>你还可以删掉这个版本：</p>
+<pre>$ spm unpublish family/name@version
+
+</pre><p>你甚至可以将整个项目都删掉（<strong>请注意，这是一个不可恢复的操作</strong>）：</p>
+<pre>$ spm unpublish family/name
+
+</pre><h2 id="搜索">搜索</h2><p>你可以使用 <code>info</code> 和 <code>search</code> 来获取模块的信息：</p>
+<pre>$ spm help info
+$ spm help search</pre></div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

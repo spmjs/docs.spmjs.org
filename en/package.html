@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>package.json - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">Documentation</li>
+    <li><a href="./index">spm</a></li>
+    <li><a href="./build">Build</a></li>
+    <li><a href="./config">Config</a></li>
+    <li><a href="./install">Install</a></li>
+    <li class="sidebar-current"><a href="./package">package.json</a></li>
+    <li><a href="./plugin">Plugin</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">package.json</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#family">family</a></li><li><a href="#name">name</a></li><li><a href="#version">version</a></li><li><a href="#description">description</a></li><li><a href="#keywords">keywords</a></li><li><a href="#homepage">homepage</a></li><li><a href="#repository">repository</a></li><li><a href="#private">private</a></li><li><a href="#spm-alias">spm.alias</a></li><li><a href="#spm-output">spm.output</a><ul><li><a href="#single-file">Single File</a></li><li><a href="#glob-pattern">Glob Pattern</a></li></ul></li><li><a href="#spm-include">spm.include</a></li><li><a href="#old-time">Old Time</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>spm follows the <a href="https://github.com/spmjs/specification">Common Module Definition</a> packaging standards, compatible with nodejs&#39; package.json.</p>
+<p>CMD <a href="https://github.com/spmjs/specification/blob/master/draft/package.md">packaging draft</a> add an additional namespace, which is <code>family</code>. spm add another namespace, which is <code>spm</code>.</p>
+<p>Here is an example of <code>package.json</code>:</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"family"</span>: <span class="string">"arale"</span>,
+    <span class="string">"name"</span>: <span class="string">"base"</span>,
+    <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+    <span class="string">"description"</span>: <span class="string">"base is ...."</span>,
+    <span class="string">"homepage"</span>: <span class="string">"http://aralejs.org/base/"</span>,
+    <span class="string">"repository"</span>: {
+        <span class="string">"type"</span>: <span class="string">"git"</span>,
+        <span class="string">"url"</span>: <span class="string">"https://github.com/aralejs/base.git"</span>
+    },
+    <span class="string">"keywords"</span>: [<span class="string">"class"</span>],
+
+    <span class="string">"spm"</span>: {
+        <span class="string">"source"</span>: <span class="string">"src"</span>,
+        <span class="string">"output"</span>: [<span class="string">"base.js"</span>, <span class="string">"i18n/*"</span>],
+        <span class="string">"alias"</span>: {
+            <span class="string">"class"</span>: <span class="string">"arale/class/1.0.0/class"</span>,
+            <span class="string">"events"</span>: <span class="string">"arale/events/1.0.0/events"</span>
+        }
+    }
+}</code></pre></div><h2 id="family">family</h2><p>This is the account name on <a href="http://spmjs.org">http://spmjs.org</a>.</p>
+<h2 id="name">name</h2><p>This is your package&#39;s name.</p>
+<h2 id="version">version</h2><p>The version of your package. We only accept version like this:</p>
+<pre>1.0.0</pre><p>The regexp is <code>\d+\.\d+\.\d+</code>.</p>
+<h2 id="description">description</h2><p>Put a description in it. It&#39;s a string. This helps people discover your package, as it&#39;s listed in <code>spm search</code>.</p>
+<h2 id="keywords">keywords</h2><p>Put keywords in it. It&#39;s an array of strings. This helps people discover your package as it&#39;s listed in <code>spm search</code>.</p>
+<h2 id="homepage">homepage</h2><p>The url to the project homepage.</p>
+<h2 id="repository">repository</h2><p>The repository of your project.</p>
+<h2 id="private">private</h2><p>If you set <code>&quot;private&quot;: true</code> in your package.json, then spm will refuse to publish it to <a href="https://spmjs.org">https://spmjs.org</a>.</p>
+<p>This is a way to prevent accidental publication of private repositories. But you can publish to other source center.</p>
+<h2 id="spm-alias">spm.alias</h2><p>Alias.</p>
+<h2 id="spm-output">spm.output</h2><p>Output is an array that contains the files for distribution, it will auto concat the relative dependencies.</p>
+<h3 id="single-file">Single File</h3><p>For example:</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+    require(<span class="string">'./b'</span>)
+});
+
+<span class="comment">// b.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+    require(<span class="string">'./c'</span>)
+});
+
+<span class="comment">// c.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+});</code></pre></div><p>Now define your output as:</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"output"</span>: [<span class="string">"a.js"</span>, <span class="string">"c.js"</span>]
+}</code></pre></div><p>It will create a <code>a.js</code> and a <code>c.js</code> in the <code>dist</code> directory. The <code>dist/a.js</code> contains code of <code>src/a.js</code>, <code>src/b.js</code> and <code>src/c.js</code>. The <code>dist/c.js</code> will only contain the code of <code>src/c.js</code>, because it requires nothing.</p>
+<h3 id="glob-pattern">Glob Pattern</h3><p>Output also support glob patterns. Take an example:</p>
+<pre>package.json
+src/
+    i18n/
+        en.js
+        zh.js
+        fr.js</pre><p>Now define your output as:</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"output"</span>: [<span class="string">"i18n/*.js"</span>]
+}</code></pre></div><p>And it will distribute every js files to <code>dist</code> folder.</p>
+<p>If your folder structure is something like this:</p>
+<pre>src/
+    i18n/
+        locale.js
+        en/
+            locale.js
+        zh/
+            zh_CN/
+                locale.js
+            zh_TW/
+                locale.js</pre><p>You should define your output as:</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"output"</span>: [<span class="string">"i18n/**/*"</span>]
+}</code></pre></div><h2 id="spm-include">spm.include</h2><p>This means the build strategy, options for include:</p>
+<ul>
+<li>relative: this is the default value, include relative dependencies</li>
+<li>all: include all dependencies</li>
+<li>self: include only my self</li>
+</ul>
+<h2 id="old-time">Old Time</h2><ol>
+<li><code>root</code> is deprecated, use <code>family</code> instead.</li>
+<li><code>dependencies</code> is deprecated, use <code>spm.alias</code> instead.</li>
+<li><code>output</code> changed</li>
+</ol>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

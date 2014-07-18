@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>Config - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">Documentation</li>
+    <li><a href="./index">spm</a></li>
+    <li><a href="./build">Build</a></li>
+    <li class="sidebar-current"><a href="./config">Config</a></li>
+    <li><a href="./install">Install</a></li>
+    <li><a href="./package">package.json</a></li>
+    <li><a href="./plugin">Plugin</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">Config</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#user">user</a></li><li><a href="#install">install</a></li><li><a href="#source">source</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p><strong>Status: API design</strong></p>
+<p>Configuration file is located at <code>~/.spm/spmrc</code> in ini format:</p>
+<pre>$ spm config user.username lepture</pre><h2 id="user">user</h2><p>The <code>[user]</code> section contains information of the current user.</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[user]</span>
+<span class="setting">username =<span class="value"></span></span>
+
+<span class="comment">; gruntfile can be a local path or an online url</span>
+<span class="comment">; gruntfile is used for task based commands</span>
+<span class="setting">gruntfile =<span class="value"></span></span></code></pre></div><h2 id="install">install</h2><p>The <code>[install]</code> section contains settings for installation.</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[install]</span>
+<span class="comment">; when spm install a module, should we keep the debugfiles</span>
+<span class="setting">debugfile = <span class="value"><span class="keyword">true</span></span></span>
+
+<span class="comment">; spm install path format, it should be end with {{filename}}</span>
+<span class="setting">format = <span class="value">{{family}}/{{name}}/{{version}}/{{filename}}</span></span></code></pre></div><h2 id="source">source</h2><p>Define or add your own source center with <code>[source]</code> section.</p>
+<p>The default source is:</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[source:default]</span>
+<span class="setting">url = <span class="value">https://spmjs.org</span></span></code></pre></div><p>You can add another source:</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[source:alipay]</span>
+<span class="setting">url = <span class="value">http://spmjs.alipay.com</span></span></code></pre></div><p>When you <code>info</code>, <code>search</code>, <code>login</code>, <code>install</code>, <code>publish</code>, you can set the source in your command line:</p>
+<pre>$ spm info jquery -s alipay</pre><p>If you are behide a firewall, you need proxy:</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[source:default]</span>
+<span class="setting">proxy = <span class="value">username:password@proxy.server:port</span></span></code></pre></div></div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

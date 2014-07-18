@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>Package.json - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="./">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">开始</li>
+    <li><a href="./index">新手入门</a></li>
+    <li><a href="./environment">Node 环境配置</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">规范标准</li>
+    <li><a href="./spm-global-config">spmrc 配置文件</a></li>
+    <li class="sidebar-current"><a href="./package">Package.json</a></li>
+    <li><a href="./transport">Transport</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">构建</li>
+    <li><a href="./spm-build">标准构建</a></li>
+    <li><a href="./build-task">构建过程详解</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">社区</li>
+    <li><a href="./contribute">如何贡献</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">Package.json</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#family-required">family (required)</a></li><li><a href="#name-required">name (required)</a></li><li><a href="#version-required">version (required)</a></li><li><a href="#description">description</a></li><li><a href="#keywords">keywords</a></li><li><a href="#author">author</a></li><li><a href="#maintainer">maintainer</a></li><li><a href="#homepage">homepage</a></li><li><a href="#repository">repository</a></li><li><a href="#bugs">bugs</a></li><li><a href="#private">private</a></li><li><a href="#spm">spm</a><ul><li><a href="#alias">alias</a></li><li><a href="#devalias">devAlias</a></li><li><a href="#include">include</a></li><li><a href="#output">output</a></li></ul></ul>
+  </div>
+
+  <div class="entry-content"><p><a href="http://docs.spmjs.org/en/package">English Version</a></p>
+<p>spm 遵循 <a href="https://github.com/spmjs/specification">Common Module Definition</a> 的 <a href="https://github.com/spmjs/specification/blob/master/draft/package.md">packaging draft</a> 规范，每个模块必须有一个 package.json 文件来描述模块自身。</p>
+<p>以下为 package.json 的示例</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"family"</span>: <span class="string">"arale"</span>,
+    <span class="string">"name"</span>: <span class="string">"base"</span>,
+    <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+    <span class="string">"description"</span>: <span class="string">"base is ...."</span>,
+    <span class="string">"keywords"</span>: [<span class="string">"class"</span>],
+    <span class="string">"author"</span>: <span class="string">"Hsiaoming Yang &lt;me@lepture.com&gt;"</span>,
+    <span class="string">"maintainer"</span>: [
+      <span class="string">"Hsiaoming Yang &lt;me@lepture.com&gt;"</span>,
+      <span class="string">"Haoliang Gao &lt;a@chuo.me&gt;"</span>
+    ],
+    <span class="string">"homepage"</span>: <span class="string">"http://aralejs.org/base/"</span>,
+    <span class="string">"repository"</span>: {
+        <span class="string">"type"</span>: <span class="string">"git"</span>,
+        <span class="string">"url"</span>: <span class="string">"https://github.com/aralejs/base.git"</span>
+    },
+    <span class="string">"bugs"</span>: {
+        <span class="string">"url"</span>: <span class="string">"https://github.com/arale/overlay/issues"</span>
+    },
+
+    <span class="string">"spm"</span>: {
+        <span class="string">"source"</span>: <span class="string">"src"</span>,
+        <span class="string">"output"</span>: [<span class="string">"base.js"</span>, <span class="string">"i18n/*"</span>],
+        <span class="string">"alias"</span>: {
+            <span class="string">"class"</span>: <span class="string">"arale/class/1.0.0/class"</span>,
+            <span class="string">"events"</span>: <span class="string">"arale/events/1.0.0/events"</span>
+        }
+    }
+}</code></pre></div><p>对于 spm 来说 family、name 和 version 三个字段是必须的，标准的模块生成的路径应该是 <code>family/name/version/file</code>，比如 jquery 的路径为 <code>jquery/jquery/1.7.2/jquery</code>，虽然看起来有冗余，但非常清晰。</p>
+<p>package.json 中的 spm 字段是扩展字段，供 spm build 使用。</p>
+<h2 id="family-required">family (required)</h2><p>这个字段为源 (<a href="http://spmjs.org">http://spmjs.org</a>) 上的账户名，可指定一类模块，我们称之为「家族」。这个字段存在的原因是为了解决命名冲突的问题，灵感来源于 github。</p>
+<p>世界这么大，不同的人开发同名组件是很常有的事情，像 arale/events 和 popomore/events 可以并存。</p>
+<p>此外还能将一种类型的模块都放在一个 family 下，如 jquery 以及他的 ui 组件都可以放在 jquery 的 family 下。</p>
+<p>命名规范支持小写字母，数字和 -，正则匹配 <code>[a-z0-9-]</code>。</p>
+<h2 id="name-required">name (required)</h2><p>模块的名字，命名规范同 family。</p>
+<h2 id="version-required">version (required)</h2><p>版本使用 <code>MAJOR.MINOR.PATCH</code> 版本好，正则匹配 <code>\d+\.\d+\.\d+</code>。</p>
+<p>PATCH 变更为 bugfix，MINOR 为非兼容的修改和功能新增，MAJOR 为定位调整或大范围的重写。</p>
+<h2 id="description">description</h2><p>模块的简介，对模块的描述应该能让其他人了解模块的功能，可通过 spm search 搜索。</p>
+<h2 id="keywords">keywords</h2><p>模块的关键字，为一个数组，可通过 spm search 搜索。</p>
+<h2 id="author">author</h2><p>模块的作者，也就是最初开发这个模块的人。</p>
+<p>支持两种写法</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"author"</span>: <span class="string">"Hsiaoming Yang &lt;me@lepture.com&gt;"</span>
+
+<span class="string">"author"</span>: {
+  <span class="string">"name"</span>: <span class="string">"Hsiaoming Yang"</span>,
+  <span class="string">"email"</span>: <span class="string">"me@lepture.com"</span>
+}</code></pre></div><h2 id="maintainer">maintainer</h2><p>后期模块的维护者或贡献者，为一个数组。</p>
+<h2 id="homepage">homepage</h2><p>模块的文档页面。</p>
+<h2 id="repository">repository</h2><p>模块的仓库。</p>
+<h2 id="bugs">bugs</h2><p>模块问题和讨论的链接。</p>
+<h2 id="private">private</h2><p>If you set <code>&quot;private&quot;: true</code> in your package.json, then spm will refuse to publish it to <a href="https://spmjs.org">https://spmjs.org</a>.</p>
+<p>This is a way to prevent accidental publication of private repositories. But you can publish to other source center.</p>
+<h2 id="spm">spm</h2><p>这个字段是供 spm build 使用，请看<a href="/doc/spm-build">构建章节</a>。</p>
+<h3 id="alias">alias</h3><p>用来配置模块的依赖，以及依赖的别名，打包时将会从此字段读取相关的依赖链信息。</p>
+<h3 id="devalias">devAlias</h3><p>配置开发中需要用到的模块的别名。</p>
+<h3 id="include">include</h3><p>打包策略，可选 <code>all</code>、<code>relative</code>、<code>self</code>，分别表示<code>打包所有依赖</code>、<code>打包相对依赖</code>、<code>自打包自身</code>，
+默认为 <code>relative</code>。</p>
+<h3 id="output">output</h3><p>标识模块的输出文件，可以有多个。</p>
+<hr>
+<p>例如：</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"spm"</span>: {
+  <span class="string">"include"</span>: <span class="string">"all"</span>,
+  <span class="string">"alias"</span>: {
+    <span class="string">"jquery"</span>: <span class="string">"jquery/jquery/1.7.2/jquery"</span>,
+    <span class="string">"base"</span>: <span class="string">"arale/base/1.0.0/base"</span>
+  },
+  <span class="string">"devaAlias"</span>: {
+    <span class="string">"expect"</span>: <span class="string">"gallery/expect/0.2.1/expect"</span>
+  },
+  <span class="string">"output"</span>: [
+    <span class="string">"index.js"</span>,
+    <span class="string">"example.js"</span>
+  ]
+}</code></pre></div><hr>
+<h1 id="old-time">Old Time</h1><ol>
+<li>root is deprecated, use family instead.</li>
+<li>dependencies is deprecated, use spm.alias instead.</li>
+<li>output changed</li>
+</ol>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>使用 Spm2 构建业务模块的个人经验 - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">使用 Spm2 构建业务模块的个人经验</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#引子">引子</a></li><li><a href="#打包策略">打包策略</a><ul><li><a href="#目录结构">目录结构</a></li><li><a href="#策略">策略</a></li><li><a href="#策略的优点">策略的优点</a></li></ul></li><li><a href="#使用-spm-chaos-build-插件打包">使用 spm-chaos-build 插件打包</a></li><li><a href="#nginx-gzip-bonus">nginx gzip bonus</a></li><li><a href="#注意事项">注意事项</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>昨天终于搞定了使用 Spm2 构建业务模块，通过自己编写的 Spm2 插件来实现
+写了篇文章在这里 <a href="http://chaoskeh.com/blog/how-to-build-seajs-business-module-by-spm2.html">如何使用 Spm2 压缩合并业务模块</a>
+这里把文章全文贴过来，希望能帮到有相同需求的同学
+插件源码在此<a href="https://github.com/edokeh/spm-chaos-build">https://github.com/edokeh/spm-chaos-build</a> ，欢迎交流 @lepture @twinstony</p>
+<h2 id="引子">引子</h2><p>为了便于理解，先下个定义</p>
+<ul>
+<li>标准模块是指 jQuey/underscore 这种不含具体业务逻辑的库</li>
+<li>业务模块则相反，包含了网站的前端业务逻辑，比如处理表单校验、发送特定的 ajax 请求等等</li>
+</ul>
+<p>Spm2 提供了对标准模块打包合并的支持，但是如果你想用它来打包业务模块的话，可能不太适合，为什么呢？</p>
+<ul>
+<li>标准模块必须有版本号，但业务模块变动频繁，稍微改一下代码就要手工去改版本号，多痛苦啊</li>
+<li>业务模块的“模块性”往往表现得没有那么强（业务模块常常是没有 exports 的），如果简单页面对应的少量 JS 也当做标准模块来处理，会觉得很别扭</li>
+<li>标准模块要遵循 src/dist 这样的目录结构，让业务模块也遵循这个约定也很别扭</li>
+</ul>
+<p>基于这些原因，我定义了一个针对业务模块的打包策略，并写了相应的 Spm2 插件来实现这个策略
+下面我先讲解一下这个策略</p>
+<h2 id="打包策略">打包策略</h2><h3 id="目录结构">目录结构</h3><p>请看这个例子的代码 <a href="https://github.com/edokeh/spm-chaos-build-example">https://github.com/edokeh/spm-chaos-build-example</a>
+这是一个简单的 web 项目，包含两个页面以及若干 JS 代码
+文件结构如下</p>
+<pre>├─html    &lt;--- 这个目录存放 HTML 
+│  ├─blogs
+│  └─users
+└─js    &lt;--- 这个目录存放 JS
+    ├─example    &lt;--- 这个目录存放业务模块代码
+    │  ├─base
+    │  ├─blogs
+    │  └─users
+    │  └─package.json
+    ├─sea-modules    &lt;--- 这个是 SeaJS 标准模块的目录
+    │  ├─gallery
+    │  └─seajs
+    └─seajs-config.js    &lt;-- 整个项目的 seajs 配置文件</pre><p>不管是否用 SeaJS ，这种结构还是很有代表性的，即 HTML 文件（或者 JSP/ Velocity）放在一个目录，而 JS 文件放在另外一个目录
+对于 JS 目录内部，我做了这样的约定</p>
+<ul>
+<li>标准模块和 SeaJS 本身都放在一个目录下（也就是SeaJS 里 base 目录的概念）</li>
+<li>为所有的业务模块单独建一个目录（目录名可以参考项目名称），不需要遵循 src/dist 的标准目录约定，但是需要一份 package.json 用于配置如何打包</li>
+<li>SeaJS 的配置文件单独存放，不属于这两个目录</li>
+</ul>
+<p>页面上要 use 业务模块时，通常是使用 <strong>普通绝对路径</strong>，比如 <code>seajs.use(&#39;/js/example/blogs/index&#39;)</code> </p>
+<h3 id="策略">策略</h3><p>请看：</p>
+<ol>
+<li>在 sea-modules 目录下新建业务模块的同名目录 example</li>
+<li>通过 package.json 获知哪些 JS 要打包（后面细讲），将这些文件合并压缩后放置到 sea-modules/example 目录下，并且保持相对路径不变
+比如 <code>/js/example/blogs/index.js</code> --&gt; <code>/js/sea-modules/example/blogs/index.js</code></li>
+<li>取得这批新文件内容的 MD5 摘要，然后重命名原文件
+比如 <code>/js/sea-modules/example/blogs/index.js</code> --&gt; <code>/js/sea-modules/example/blogs/index-6ae687466e603b80dea58976e6e93548.js</code></li>
+<li>修改 SeaJS 的配置文件，将上一步的这种映射关系配置进去，参考如下</li>
+</ol>
+<div class="highlight"><pre><code class="javascript">seajs.config({
+    map : [
+        [<span class="string">"users/index.js"</span>,  <span class="string">"users/index-7719c30fc807868c70e9d78ac51e9baa.js"</span>]
+    ]
+});</code></pre></div><p>OK，至此打包完成，这时候要使用打包后的业务模块时，得换用 <strong>顶级标识</strong>，比如  <code>seajs.use(&#39;example/blogs/index&#39;)</code> 
+可以看到，其实跟打包前的普通绝对路径有很强的关联，如果能有个开关自动切换就方便多了</p>
+<p>所以我在打包的第4步中，还向 SeaJS 配置文件加了这么一句 <code>seajs.production = true</code> （对不起@lifesinger，借你的对象存个临时属性）
+那么我们页面上引用模块时，可以换成这样</p>
+<pre>seajs.use((seajs.production ? &#39;&#39; : &#39;/js/&#39;) + &#39;example/users/index&#39;)</pre><p>恩，这样打包后也不用手工再去改代码了，而且可以适用于任何的后端框架（Rails / PHP / Spring 等等）</p>
+<h3 id="策略的优点">策略的优点</h3><p>稍微总结一下这个策略：</p>
+<ul>
+<li>开发时，目录结构比较自然，或者说比较接近传统的方式，更容易被接受</li>
+<li>不需要再为版本号烦恼，实际上这里使用了 MD5 来作为版本号</li>
+<li>JS 文件的缓存配置非常简单，只需要为 /js/sea-modules 目录下所有的文件设置超长（比如100年）的 Expires 头即可，不用担心文件更新的问题，因为如果业务模块发生了改动，打包后的文件名字会不一样（内容 MD5 摘要）</li>
+<li>只需要做一点修改（use 那段），整个打包的过程就可以全自动化了，打包完了之后不必再修改，而且对后端没有依赖</li>
+</ul>
+<p>其实熟悉 Rails 的同学应该看出来了，这种策略跟 Assets Pipeline 类似，包括 MD5 文件名、开发/生产模式切换等等
+那么这套策略该怎么实现呢？</p>
+<h2 id="使用-spm-chaos-build-插件打包">使用 spm-chaos-build 插件打包</h2><p>我写了一个 Spm2 的插件能够自动完成上面的这个过程，首先需要安装好最新版的 NodeJS
+然后安装 Spm2 和这个插件</p>
+<pre>npm install spm -g
+npm install spm-chaos-build -g</pre><p>接着配置一下 package.json ，这里与 Spm2 的配置规则基本一致，不过只需要 output 和 alias 两个项即可，参考如下</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"spm"</span> : {
+        <span class="string">"output"</span> : [
+            <span class="string">"blogs/new.js"</span>,
+            <span class="string">"users/index.js"</span>
+        ],
+        <span class="string">"alias"</span> : {
+            <span class="string">"$"</span> : <span class="string">"gallery/jquery/1.9.1/jquery"</span>,
+        }
+    }
+}</code></pre></div><p>Spm2 的 output 配置目前只能支持合并 <strong>相对标识</strong> 的模块，对于业务模块来说，有时候还是希望将 <strong>顶级标识</strong> 的模块也合并进来（Spm 1.x 里的 . 和 *）
+所以我做了一点扩展，还可以这样配置</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"output"</span> : {
+    <span class="string">"relative"</span> : [   <span class="comment">// 只合并相对标识模块</span>
+        <span class="string">"blogs/new.js"</span>,
+        <span class="string">"users/index.js"</span>
+    ],
+    <span class="string">"all"</span> : [   <span class="comment">// 合并相对标识和顶级标识的模块</span>
+        <span class="string">"base/handlebars.js"</span>
+    ]
+},</code></pre></div><p>配置完之后，到 /js 目录下执行命令</p>
+<pre>cd js
+spm chaos-build example -C seajs-config.js</pre><p>解释一下，example 是业务模块的目录名，-C 参数用于指定 SeaJS 的配置文件以便打包完之后修改此文件（上面第4步）
+如果你的标准模块目录不叫 sea-modules ，那么可以用 -O 参数自定义</p>
+<pre>spm chaos-build example -C seajs-config.js -O libs</pre><h2 id="nginx-gzip-bonus">nginx gzip bonus</h2><p>上面提到，你可以为 sea-modules 目录下所有文件设置超长的过期头，另外考虑到前端性能，你可能还希望启用 gzip
+在 nginx 里面配置 gzip 很简单，不过默认配置下这个压缩过程是动态实时的，需要消耗服务器资源
+所以 nginx 还提供一种预压缩的方式，即由服务器预先生成所有的 gzip 文件，浏览器请求时，直接返回这个压缩过的文件</p>
+<p>我的插件也将这个压缩文件的过程集成了进来，通过 --gzip 参数可以开启</p>
+<pre>spm chaos-build example -C seajs-config.js -gzip current
+spm chaos-build example -C seajs-config.js -gzip all</pre><p>传递 all 参数表示压缩 sea-modules 目录下所有文件，而 current 只压缩这次生成的业务模块文件
+执行后可以发现，目录下多了一堆 .gz 文件，比如 blogs/new-ce1fb85354fa9309a9ff5184e43a22d0.js.gz</p>
+<p>然后配置下 nginx 即可，参考如下：</p>
+<pre>location ~ ^/js/sea-modules {
+      gzip_static on;
+      expires 1y;
+      add_header Cache-Control public;
+}</pre><h2 id="注意事项">注意事项</h2><ul>
+<li>有个小缺陷，必须使用 script 标签引入 SeaJS 配置文件，而不能使用 data-config ，因为必须让配置文件在 seajs.use 之前执行，参考</li>
+</ul>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"/js/sea-modules/seajs/2.0.0/sea.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"/js/seajs-config.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+    seajs.use((seajs.production ? <span class="string">''</span> : <span class="string">'/js/'</span>) + <span class="string">'example/users/index'</span>);
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></code></pre></div><ul>
+<li><p>中间处理模块 transport 的过程与 spm-build 略有不同，做了精简，会将 css/html 后缀的文件转换为模块并合并，但 css文件里面的@import 不会被处理</p>
+</li>
+<li><p>开发时 require 文本文件，需要引入 text 插件，而打包后就不需要了；开发时 require css 文件不需要插件，但打包后需要 style 插件支持。所以我现在这么配置</p>
+</li>
+</ul>
+<div class="highlight"><pre><code class="javascript">seajs.config({
+    plugins : seajs.production ? [<span class="string">'style'</span>] : [<span class="string">'text'</span>]
+});</code></pre></div></div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

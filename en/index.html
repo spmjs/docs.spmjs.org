@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>spm - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">Documentation</li>
+    <li class="sidebar-current"><a href="./index">spm</a></li>
+    <li><a href="./build">Build</a></li>
+    <li><a href="./config">Config</a></li>
+    <li><a href="./install">Install</a></li>
+    <li><a href="./package">package.json</a></li>
+    <li><a href="./plugin">Plugin</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">spm</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#installation">Installation</a></li><li><a href="#commands">Commands</a></li><li><a href="#build">Build</a></li><li><a href="#install">Install</a></li><li><a href="#register-amp-login">Register &amp; Login</a></li><li><a href="#publish-amp-unpublish">Publish &amp; Unpublish</a></li><li><a href="#info-amp-search">Info &amp; Search</a></li><li><a href="#config">Config</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>spm is built on nodejs, which means you have to install nodejs yourself.
+I believe you have done this part, but I&#39;d like to repeat myself.</p>
+<p>There are several ways to install nodejs. The easiest way is through a package manager like <code>apt-get</code> on debian-like linux distribution, or <code>homebrew</code> on mac. However node in such package managers may be too old.</p>
+<p>Get the node binaries on the offical <a href="http://nodejs.org/download/">download</a> webpage.</p>
+<p>Suggestions for Linux:</p>
+<ul>
+<li><p>grab the <em>Linux Binaries</em>, extract it to your home directory, for example: <code>~/dist/node</code></p>
+</li>
+<li><p>add <code>~/dist/node/bin</code> to <code>PATH</code> in your bashrc or zshrc:</p>
+<pre>export PATH=&quot;$PATH:$HOME/dist/node/bin&quot;</pre></li>
+</ul>
+<p>Putting node in your home directory or some place need no sudo privellege makes things simple. You don&#39;t have to <code>sudo npm install &lt;package&gt;</code> anymore.</p>
+<p>Suggestions for Mac:</p>
+<ul>
+<li>just like Linux, you can do the same thing.</li>
+<li>homebrew is another good choice.</li>
+</ul>
+<p>Suggestions for Windows:</p>
+<ul>
+<li>do whatever you want, I don&#39;t think there is another choice.</li>
+</ul>
+<h2 id="installation">Installation</h2><p>Install spm is simple with npm:</p>
+<div class="highlight"><pre><code class="bash">$ npm install spm@<span class="number">2</span>.x -g</code></pre></div><p>Please install it with <code>-g</code> option, otherwise you can&#39;t use it in command line.</p>
+<p>You can also grab the code from <a href="https://github.com/spmjs/spm2">github</a> and install from the source code.</p>
+<p>Try with <code>spm</code> now:</p>
+<div class="highlight"><pre><code class="bash">$ spm</code></pre></div><p>If you haven&#39;t set <code>NODE_PATH</code>, it will prompt an information like:</p>
+<pre>Please set environment variable NODE_PATH in ~/.zshrc:
+
+    export NODE_PATH=/usr/local/share/npm/lib/node_modules</pre><h2 id="commands">Commands</h2><p>spm comes with some built-in commands, and it can be extended by plugins. Show the help screen with:</p>
+<div class="highlight"><pre><code class="bash">$ spm -h</code></pre></div><p>or:</p>
+<div class="highlight"><pre><code class="bash">$ spm <span class="built_in">help</span></code></pre></div><p>You can get more help information of a sub-command by:</p>
+<div class="highlight"><pre><code class="bash">$ spm install -h</code></pre></div><p>or:</p>
+<div class="highlight"><pre><code class="bash">$ spm <span class="built_in">help</span> install</code></pre></div><p>Want to write your own plugin? Checkout the <a href="./plugin">plugin</a> section.</p>
+<h2 id="build">Build</h2><p>Since spm is not a build tools, it has no built-in <strong>build</strong> function.
+When you installed spm, you get everything to communicate with <a href="https://spmjs.org">https://spmjs.org</a> .</p>
+<p>If you want to publish your package to <a href="https://spmjs.org">https://spmjs.org</a> , your package should contain:</p>
+<pre>package.json
+dist/</pre><ol>
+<li>A package.json that contains every information we need</li>
+<li>a dist directory that contains compiled module files</li>
+</ol>
+<p>If you are writing a standard module, you can get <code>spm-build</code>:</p>
+<div class="highlight"><pre><code class="bash">$ npm install spm-build -g</code></pre></div><p>Let&#39;s have an example:</p>
+<pre>package.json
+src/
+    hello.js</pre><p>The source code of <code>hello.js</code> is as simple as:</p>
+<div class="highlight"><pre><code class="javascript">define(<span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span> {</span>
+    exports.name = <span class="string">'hello'</span>
+    exports.jquery = require(<span class="string">'jquery'</span>)
+})</code></pre></div><p>The <code>package.json</code> (more information on <a href="./package">package</a> section) is as simple as:</p>
+<div class="highlight"><pre><code class="javascript">{
+    <span class="string">"family"</span>: <span class="string">"lepture"</span>,
+    <span class="string">"name"</span>: <span class="string">"hello"</span>,
+    <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+    <span class="string">"description"</span>: <span class="string">"hello spm"</span>,
+    <span class="string">"spm"</span>: {
+        <span class="string">"alias"</span>: {
+            <span class="string">"jquery"</span>: <span class="string">"jquery/jquery/1.7.2/jquery"</span>
+        },
+        <span class="string">"output"</span>: [<span class="string">"hello.js"</span>]
+    }
+}</code></pre></div><p>Install the requirements and build the package:</p>
+<div class="highlight"><pre><code class="bash">$ spm install
+$ spm build</code></pre></div><p>After <code>spm build</code>, it should be:</p>
+<div class="highlight"><pre><code class="javascript">define(<span class="string">'lepture/hello/1.0.0/hello'</span>, [<span class="string">'jquery/jquery/1.7.2/jquery'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+    exports.name = <span class="string">'hello'</span>
+    exports.jquery = require(<span class="string">'jquery/jquery/1.7.2/jquery'</span>)
+})</code></pre></div><p>The package structure will be:</p>
+<pre>package.json
+src/
+    hello.js
+dist/
+    hello.js
+    hello-debug.js</pre><p>And now we can publish it to <a href="https://spmjs.org">https://spmjs.org</a> . Get more information on <a href="./build">build</a>.</p>
+<h2 id="install">Install</h2><p>You have used <code>spm install</code> in the build process, learn more about <code>install</code> with:</p>
+<pre>$ spm help install</pre><p>There is also an <a href="../cli/install">online manual</a> and the <a href="./install">desgin pattern</a> bebind it.</p>
+<h2 id="register-amp-login">Register &amp; Login</h2><p>You can register an account at <a href="https://spmjs.org">spmjs.org</a>. You can also register your account with <code>spm</code>:</p>
+<pre>$ spm login
+
+do you have an account? (Y/n)</pre><p>And answer no. It will prompt:</p>
+<pre>do you have an account? (Y/n) n
+
+username:
+email:
+password:</pre><p>If you answer yes, you can login now.</p>
+<h2 id="publish-amp-unpublish">Publish &amp; Unpublish</h2><p>We need your contribution, publishing a package helps a lot.</p>
+<p>Register an account at <a href="https://spmjs.org">spmjs.org</a>. Replace <code>family</code> in <code>package.json</code> with your account name (<code>lepture</code> is my account name).</p>
+<p>And now you can publish your package with:</p>
+<div class="highlight"><pre><code class="bash">$ spm publish</code></pre></div><p>Get more help on publish:</p>
+<div class="highlight"><pre><code class="bash">$ spm <span class="built_in">help</span> publish</code></pre></div><ul>
+<li>You can also read our online manual <a href="../cli/publish">spm publish</a>.</li>
+<li>Find more information on <a href="./package">package</a>.</li>
+</ul>
+<p>If you accidentally published a broken version, you can force to publish the version again:</p>
+<div class="highlight"><pre><code class="bash">$ spm publish <span class="operator">-f</span></code></pre></div><p>You can also unpublish it:</p>
+<div class="highlight"><pre><code class="bash">$ spm unpublish family/name@version</code></pre></div><p>You can even delete the whole project (<strong>you can never recovery it again</strong>):</p>
+<div class="highlight"><pre><code class="bash">$ spm unpublish family/name</code></pre></div><h2 id="info-amp-search">Info &amp; Search</h2><p>You can&#39;t miss it, let&#39;s try:</p>
+<pre>$ spm help info
+$ spm help search</pre><h2 id="config">Config</h2><p>The configuration file is located at <code>~/.spm/spmrc</code>. It is in ini format:</p>
+<div class="highlight"><pre><code class="ini"><span class="title">[user]</span>
+<span class="setting">username = <span class="value">lepture</span></span>
+
+<span class="title">[source:private]</span>
+<span class="setting">url = <span class="value">http://source.your-company.com</span></span></code></pre></div><p>More information can be found at <a href="./config">config</a> section.</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

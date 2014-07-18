@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>spm-init - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="../doc/">使用文档</a>
+          <a href="config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">包管理工具</li>
+    <li><a href="./config">spm-config</a></li>
+    <li><a href="./login">spm-login</a></li>
+    <li><a href="./install">spm-install</a></li>
+    <li><a href="./publish">spm-publish</a></li>
+    <li><a href="./unpublish">spm-unpublish</a></li>
+    <li><a href="./info">spm-info</a></li>
+    <li><a href="./help">spm-help</a></li>
+    <li><a href="./plugin">spm-plugin</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">通用插件</li>
+    <li><a href="./build">spm-build</a></li>
+    <li class="sidebar-current"><a href="./init">spm-init</a></li>
+    <li><a href="./status">spm-status</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">支付宝插件</li>
+    <li><a href="./deploy">spm-deploy</a></li>
+    <li><a href="./doc">spm-doc</a></li>
+    <li><a href="./zip">spm-zip</a></li>
+    <li><a href="./doctor">spm-doctor</a></li>
+    <li><a href="./test">spm-test</a></li>
+    <li><a href="./totoro">spm-totoro</a></li>
+    <li><a href="./watch">spm-watch</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">spm-init</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#仓库">仓库</a></li><li><a href="#安装">安装</a></li><li><a href="#使用说明">使用说明</a><ul><li><a href="#模板存放路径">模板存放路径</a></li><li><a href="#安装模板">安装模板</a></li><li><a href="#-u-upgrade">-u, --upgrade</a></li><li><a href="#-f-force">-f, --force</a></li></ul></ul>
+  </div>
+
+  <div class="entry-content"><h2 id="仓库">仓库</h2><p><a href="https://github.com/spmjs/spm-init">spmjs/spm-init</a></p>
+<h2 id="安装">安装</h2><pre>npm install spm@2.x -g
+npm install spm-init -g</pre><p>安装模板需要 git，确保能在命令行里运行 git。</p>
+<h2 id="使用说明">使用说明</h2><p>可以根据一个指定的模板初始化当前目录，但首先需要 <a href="#安装模板">安装模板</a>。</p>
+<pre>spm init</pre><h3 id="模板存放路径">模板存放路径</h3><p>模板文件默认路径为 <code>~/.spm/init</code>，可以通过配置（<code>~/.spm/spmrc</code>）添加</p>
+<pre>[init]
+template = ~/.spm-init</pre><p>或执行</p>
+<pre>$ spm config init.template ~/.spm-init</pre><h3 id="安装模板">安装模板</h3><p>默认模板会自动从 github 上抓取，地址是 <a href="https://github.com/spmjs/template-cmd/">https://github.com/spmjs/template-cmd/</a> ，模板会下载到上面提到的路径。</p>
+<h3 id="-u-upgrade">-u, --upgrade</h3><p>更新模板，会执行 <code>git pull</code></p>
+<pre>$ spm-init --upgrade</pre><h3 id="-f-force">-f, --force</h3><p>当前目录存在文件仍然继续执行。</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

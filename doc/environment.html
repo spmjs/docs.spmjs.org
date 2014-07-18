@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>Node 环境配置 - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="./">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">开始</li>
+    <li><a href="./index">新手入门</a></li>
+    <li class="sidebar-current"><a href="./environment">Node 环境配置</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">规范标准</li>
+    <li><a href="./spm-global-config">spmrc 配置文件</a></li>
+    <li><a href="./package">Package.json</a></li>
+    <li><a href="./transport">Transport</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">构建</li>
+    <li><a href="./spm-build">标准构建</a></li>
+    <li><a href="./build-task">构建过程详解</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">社区</li>
+    <li><a href="./contribute">如何贡献</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">Node 环境配置</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#安装-node">安装 Node</a></li><li><a href="#设置-path-和-node-path">设置 PATH 和 NODE_PATH</a></li><li><a href="#npm-prefix">npm prefix</a></li><li><a href="#去除-sudo">去除 sudo</a></li><li><a href="#安装-git">安装 git</a></li><li><a href="#windows-环境">windows 环境</a></li></ul>
+  </div>
+
+  <div class="entry-content"><h2 id="安装-node">安装 Node</h2><p>作为一个前端，你需要 Node 环境，<a href="http://nodejs.org/download/">下载地址</a></p>
+<p>你也可以<a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">通过包管理工具安装</a></p>
+<blockquote>
+<p>spm 使用的 Node 版本高于 0.8.24。</p>
+</blockquote>
+<h2 id="设置-path-和-node-path">设置 PATH 和 NODE_PATH</h2><p><strong>在配置前你要明白自己在做什么。</strong></p>
+<p><code>PATH</code> 用于配置执行文件的路径，当输入一个命令的时候，会按照目录的先后顺序查找，找到后执行这个命令。一般 <code>PATH</code> 会有多个目录，以冒号分隔。</p>
+<p>在配置 <code>PATH</code> 的时候要确认 Node 安装的位置，找到 bin 文件夹，把他放在 PATH 最前面，如 <code>/usr/local/bin</code>。</p>
+<p>require 全局模块的时候会用到 <code>NODE_PATH</code>，会在配置的目录下搜索模块，看看<a href="http://nodejs.org/api/modules.html#modules_loading_from_the_global_folders">官方说明</a>。</p>
+<p><code>NODE_PATH</code> 的配置一般都是相对于 bin 目录的，如 <code>/usr/local/lib/node_modules</code>。</p>
+<p>如果你的 node 文件为 <code>/usr/local/bin/node</code>，那</p>
+<div class="highlight"><pre><code class="ini">export PATH=/usr/local/bin:$PATH
+export NODE_PATH=/usr/local/lib/node_modules</code></pre></div><p>把他加到你的 <code>.bash_profile</code> 或 <code>.zshrc</code> 中。</p>
+<h2 id="npm-prefix">npm prefix</h2><p>有时你会发现 npm 的安装目录和 <code>NODE_PATH</code> 不是同一个。npm install 会安装到 <code>/usr/local/share/npm/lib/node_modules</code>，但 <code>NODE_PATH</code> 为 <code>/usr/local/lib/node_modules</code>。</p>
+<p>这是因为你设置了 prefix (可能是编译的时候加的) 为 <code>/usr/local/share/npm</code>。</p>
+<p>查看 prefix</p>
+<pre>npm config get prefix</pre><p>修改 prefix</p>
+<pre>npm config set prefix /usr/local</pre><h2 id="去除-sudo">去除 sudo</h2><p>使用 npm 安装模块的时候经常要输入 sudo，还要输入密码，这点很让人烦躁，而且会导致很多权限问题。下面你可以简单粗暴的去除 sudo（看看 npm 作者的<a href="http://howtonode.org/introduction-to-npm">软文</a>）</p>
+<pre>sudo chown -R $USER /usr/local</pre><p>也可以使用 <a href="https://github.com/creationix/nvm/">nvm</a> 来管理 node 的安装目录和版本，你可以安装在任何目录而不是 <code>/usr/local</code></p>
+<h2 id="安装-git">安装 git</h2><p>版本管理工具也是必须的，可以先<a href="http://rogerdudler.github.com/git-guide/index.zh.html">了解 git 的相关内容</a></p>
+<p>git 下载地址如下</p>
+<ul>
+<li><p><a href="https://code.google.com/p/git-osx-installer/downloads/list?can=3&amp;q=&amp;sort=-uploaded&amp;colspec=Filename+Summary+Uploaded+Size+DownloadCount">git for mac</a></p>
+</li>
+<li><p><a href="https://code.google.com/p/msysgit/downloads/list?q=full+installer+official+git">git for windows </a></p>
+</li>
+</ul>
+<h2 id="windows-环境">windows 环境</h2><p>下载 <a href="http://nodejs.org/download/">Windows 的 Node</a> 并安装，如下配置环境变量</p>
+<div class="highlight"><pre><code class="ini"><span class="setting">PATH = <span class="value">C:\Users\{{username}}\AppData\Roaming\npm</span></span>
+<span class="setting">NODE_PATH = <span class="value">C:\Users\{{username}}\AppData\Roaming\npm\node_modules</span></span></code></pre></div><p>也可以试试 Windows 的包管理工具 <a href="https://github.com/chocolatey/chocolatey">chocolatey</a></p>
+<p>安装 nodejs 和 git</p>
+<pre>c:\&gt; cinst git.install
+c:\&gt; cinst nodejs.install</pre></div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

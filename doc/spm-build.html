@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>标准构建 - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="./">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">开始</li>
+    <li><a href="./index">新手入门</a></li>
+    <li><a href="./environment">Node 环境配置</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">规范标准</li>
+    <li><a href="./spm-global-config">spmrc 配置文件</a></li>
+    <li><a href="./package">Package.json</a></li>
+    <li><a href="./transport">Transport</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">构建</li>
+    <li class="sidebar-current"><a href="./spm-build">标准构建</a></li>
+    <li><a href="./build-task">构建过程详解</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">社区</li>
+    <li><a href="./contribute">如何贡献</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">标准构建</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#如何构建">如何构建</a></li><li><a href="#构建的配置">构建的配置</a><ul><li><a href="#alias">alias</a></li><li><a href="#output">output</a></li><li><a href="#include">include</a></li><li><a href="#stylebox">styleBox</a></li></ul></ul>
+  </div>
+
+  <div class="entry-content"><p>SPM 本身并不是一个构建工具，但在整个模块管理的生命周期中构建是至关重要的一步。因为 Seajs 最终使用的 CMD 模块是需要 <a href="./transport.html">transport</a> 的，这也是构建必须做的一步，除此之外还可以加入合并，压缩，校验，预编译等功能。</p>
+<p>标准构建使用了 <a href="../cli/build.html">spm build</a> 这个插件，这个插件是基于 grunt task 开发的。整个构建流程被拆分成多个 task 并按顺序执行，上一个 task 的输出为下一个 task 的输入，task 之间的输入输出是基于文件的。这样的结构是可扩展的，可以在构建流程中添加自定义的 task。</p>
+<h2 id="如何构建">如何构建</h2><p>使用 spm build 需要指定目录结构，看看<a href="https://github.com/spmjs/spm-build/tree/master/examples/simple">演示</a></p>
+<pre>| - src
+  | - a.js
+  ` - b.js
+` - package.json</pre><p>静态文件</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+  require(<span class="string">'class'</span>);
+  console.log(<span class="string">'a'</span>);
+});
+
+<span class="comment">// b.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+  require(<span class="string">'./a'</span>);
+  console.log(<span class="string">'b'</span>);
+});</code></pre></div><p>Package.json 除了<a href="">标准字段</a>外还要添加 spm 字段用于构建的配置。</p>
+<div class="highlight"><pre><code class="javascript">{
+  <span class="string">"family"</span>: <span class="string">"arale"</span>,
+  <span class="string">"name"</span>: <span class="string">"test"</span>,
+  <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+  <span class="string">"spm"</span>: {
+    <span class="string">"alias"</span>: {
+      <span class="string">"class"</span>: <span class="string">"arale/class/1.0.0/class"</span>
+    },
+    <span class="string">"output"</span>: [<span class="string">"a.js"</span>, <span class="string">"b.js"</span>]
+  }
+}</code></pre></div><p>运行 <code>spm build</code> 后会在 dist 目录生成4个文件（output 指定的两个文件以及对应的 -debug 文件）</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a-debug.js</span>
+define(<span class="string">"arale/test/1.0.0/a-debug"</span>, [ <span class="string">"arale/class/1.0.0/class-debug"</span> ], <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+    require(<span class="string">"arale/class/1.0.0/class-debug"</span>);
+    console.log(<span class="string">"a"</span>);
+});
+
+
+<span class="comment">// b-debug.js</span>
+define(<span class="string">"arale/test/1.0.0/b-debug"</span>, [ <span class="string">"./a-debug"</span>, <span class="string">"arale/class/1.0.0/class-debug"</span> ], <span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+    require(<span class="string">"./a-debug"</span>);
+    console.log(<span class="string">"b"</span>);
+});
+define(<span class="string">"arale/test/1.0.0/a-debug"</span>, [ <span class="string">"arale/class/1.0.0/class-debug"</span> ], <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+    require(<span class="string">"arale/class/1.0.0/class-debug"</span>);
+    console.log(<span class="string">"a"</span>);
+});</code></pre></div><p>spm build 到底做了什么？</p>
+<p>首先会对每个 CMD 模块进行 transport 转换</p>
+<ol>
+<li>生成 id，package.json 要配置 family、name、version 这三个字段</li>
+<li>将 require 的模块替换成 alias 配置的</li>
+<li>生成依赖，提取 require 的模块及合并依赖的模块</li>
+</ol>
+<p>其次通过配置对模块进行合并(concat)操作，具体查看 <a href="#include">include</a> 配置。</p>
+<p>以上就是 CMD 构建的核心，所以封装了 <a href="https://github.com/spmjs/grunt-cmd-transport">transport</a> 和 <a href="https://github.com/spmjs/grunt-cmd-concat">concat</a>，如需要深入了解构建过程，可继续阅读<a href="./build-task">构建详解</a>。</p>
+<h2 id="构建的配置">构建的配置</h2><h3 id="alias">alias</h3><p>这个和 seajs.config 的 alias 一样，配置如下</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"spm"</span>: {
+  <span class="string">"alias"</span>: {
+    <span class="string">"base"</span>: <span class="string">"arale/base/1.0.0/base"</span>
+  }
+}</code></pre></div><p>在构建过程中会将 require 的值替换成 alias 中的值</p>
+<div class="highlight"><pre><code class="javascript">require(<span class="string">'base'</span>)
+=&gt;
+require(<span class="string">'arale/base/1.0.0/base'</span>)</code></pre></div><p>如果在 alias 中找不到则不会处理，但会有 warn 提示。如不希望替换也无提示可如下配置</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"spm"</span>: {
+  <span class="string">"alias"</span>: {
+    <span class="string">"base"</span>: <span class="string">"base"</span>
+  }
+}
+
+require(<span class="string">'base'</span>) <span class="comment">//不会替换</span></code></pre></div><h3 id="output">output</h3><p>通过 output 指定输出的文件，只有指定的文件才会输出到 dist 目录下</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+    require(<span class="string">'./b'</span>)
+});
+
+<span class="comment">// b.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+    require(<span class="string">'./c'</span>)
+});
+
+<span class="comment">// c.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require)</span> {</span>
+});</code></pre></div><p>package.json</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"output"</span>: [<span class="string">"a.js"</span>, <span class="string">"c.js"</span>]</code></pre></div><p>最终会生成 <code>dist/a.js</code> 和 <code>dist/c.js</code>，<code>dist/a.js</code> 会包括 <code>a.js</code> <code>b.js</code> <code>c.js</code>，<code>dist/c.js</code> 只包括 <code>c.js</code>。</p>
+<h3 id="include">include</h3><p>构建的时候会打包相对的模块，这是由 include 属性决定的，默认为 <code>&quot;include&quot;: &quot;relative&quot;</code></p>
+<div class="highlight"><pre><code class="javascript">require(<span class="string">'./b'</span>); <span class="xml"><span class="tag">&lt;<span class="title">=</span> 相对依赖，会打包进来
+<span class="attribute">require</span>('<span class="attribute">base</span>'); &lt;= 外部依赖，不会打包进来</span></span></code></pre></div><p>如果想打包所有的依赖可以如下配置 package.json，会把外部依赖（包括依赖的依赖）也打包进文件。</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"spm"</span>: {
+  <span class="string">"include"</span>: <span class="string">"all"</span>
+}</code></pre></div><h3 id="stylebox">styleBox</h3><p>样式隔离方案，具体功能见 <a href="https://github.com/aliceui/aliceui.org/issues/9">aliceui/aliceui.org#9</a></p>
+<p>在 package.json 中添加如下属性就可以启动样式隔离。spm build 时会帮你把 JS 中 require 的样式进行封装。</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"spm"</span>: {
+  <span class="string">"styleBox"</span>: <span class="literal">true</span>
+}</code></pre></div><blockquote>
+<p>注：需要配合 <a href="http://aralejs.org/widget">arale/widget@1.1.0+</a> 进行使用。</p>
+</blockquote>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>

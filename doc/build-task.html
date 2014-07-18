@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="nico 0.5.0">
+    <meta name="theme" content="spm 0.1">
+    <title>构建过程详解 - spm document</title>
+    <link rel="stylesheet" href="../static/one.css" />
+    <link rel="stylesheet" href="../static/syntax.css" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-38943643-2']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="navigation" role="navigation">
+        <h1 class="home"><a href="../">spmjs</a></h1>
+        <div class="menu">
+          <a style="color: #d00; font-weight: bold;" href="http://spmjs.io">[ 全新 spm3 现已发布 ]</a>
+          <a href="./">使用文档</a>
+          <a href="../cli/config">命令集</a>
+          <a href="../api/">开发者文档</a>
+        </div>
+    </div>
+    <div id="color-bar"></div>
+
+    <div class="row clearfix">
+      <div class="column-left">
+<div class="sidebar">
+  <ul>
+    <li class="sidebar-category">开始</li>
+    <li><a href="./index">新手入门</a></li>
+    <li><a href="./environment">Node 环境配置</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">规范标准</li>
+    <li><a href="./spm-global-config">spmrc 配置文件</a></li>
+    <li><a href="./package">Package.json</a></li>
+    <li><a href="./transport">Transport</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">构建</li>
+    <li><a href="./spm-build">标准构建</a></li>
+    <li class="sidebar-current"><a href="./build-task">构建过程详解</a></li>
+  </ul>
+  <ul>
+    <li class="sidebar-category">社区</li>
+    <li><a href="./contribute">如何贡献</a></li>
+  </ul>
+</div>
+</div>
+      <div class="column-right">
+<div class="hentry typo">
+  <h1 class="entry-title">构建过程详解</h1>
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    <ul><li><a href="#js-文件">js 文件</a></li><li><a href="#css-文件">css 文件</a></li><li><a href="#js-依赖的-css-文件">js 依赖的 css 文件</a></li><li><a href="#stylus-文件">stylus 文件</a></li><li><a href="#handlebars-模板文件">handlebars 模板文件</a></li></ul>
+  </div>
+
+  <div class="entry-content"><p>build 的整个任务被分解成一个个 task 执行，会针对各种文件(<code>.js</code>、<code>.css</code>、<code>.tpl</code>、<code>.handlebars</code>等)进行处理，下面是所有的任务，接下来针对每个文件进行说明。</p>
+<pre>&#39;clean:build&#39;, // delete build direcotry first
+
+&#39;spm-install&#39;, // install dependencies
+
+// build stylus
+&#39;stylus&#39;, // src/*.styl -&gt; .build/stylus/*.css
+&#39;transport:stylus&#39;, // .build/stylus/*.css -&gt; .build/src/*.css
+
+// build css
+&#39;transport:src&#39;,  // src/* -&gt; .build/src/*
+&#39;concat:css&#39;,   // .build/src/*.css -&gt; .build/tmp/*.css
+
+// build js (must be invoke after css build)
+&#39;transport:css&#39;,  // .build/tmp/*.css -&gt; .build/src/*.css.js
+&#39;concat:js&#39;,  // .build/src/* -&gt; .build/dist/*.js
+
+// to ./build/dist
+&#39;copy:build&#39;,
+&#39;cssmin:css&#39;,   // .build/tmp/*.css -&gt; .build/dist/*.css
+&#39;uglify:js&#39;,  // .build/tmp/*.js -&gt; .build/dist/*.js
+
+&#39;check-debug&#39;,
+&#39;check-online:alipay&#39;,
+&#39;peaches&#39;,
+
+&#39;clean:dist&#39;,
+&#39;copy:dist&#39;,  // .build/dist -&gt; dist
+&#39;clean:build&#39;,
+
+&#39;spm-newline&#39;</pre><p>其中最重要就是 <a href="https://github.com/spmjs/grunt-cmd-transport">transport</a> 和 <a href="https://github.com/spmjs/grunt-cmd-concat">concat</a>。</p>
+<h2 id="js-文件">js 文件</h2><p>一个模块可以依赖相对模块和绝对模块，如 a.js 依赖 base 模块和 b.js，b.js 没有依赖</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  require(<span class="string">'base'</span>);
+  require(<span class="string">'./b'</span>);
+  module.exports = <span class="string">'a'</span>;
+});
+
+<span class="comment">// b.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  module.exports = <span class="string">'b'</span>;
+});</code></pre></div><p><code>transport:src</code> 会标准化这两个 js，define 的时候添加 id 和 deps。假设这个模块的 idLeading 是 <code>arale/widget/1.1.0</code>（idLeading 是从 package.json 获取的，即 <code>family/name/version</code>），会生成如下文件，注意外部模块的依赖是从 package.json 的 alias 中读取的。</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="string">'arale/widget/1.1.0/a'</span>, [<span class="string">'arale/base/1.1.1/base'</span>, <span class="string">'arale/class/1.1.0/class'</span>, <span class="string">'arale/events/1.1.0/events'</span>, <span class="string">'./b'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  require(<span class="string">'arale/base/1.1.1/base'</span>);
+  require(<span class="string">'./b'</span>);
+  module.exports = <span class="string">'a'</span>;
+});
+
+<span class="comment">// b.js</span>
+define(<span class="string">'arale/widget/1.1.0/b'</span>, [], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  module.exports = <span class="string">'b'</span>;
+});</code></pre></div><p><code>transport:src</code> 把文件生成到 .build/src, 还会生成 -debug 文件，与源文件唯一的不同是 id 和 deps 都为 -debug。而且最后生成的依赖是打平的，包括所有的依赖。</p>
+<p><code>concat:js</code> 将 transport 后的文件进行合并，默认的合并模式为 relative，也就是只合并相对路径的模块。</p>
+<pre>// a.js
+define(&#39;arale/widget/1.1.0/a&#39;, [&#39;arale/base/1.1.1/base&#39;, &#39;arale/class/1.1.0/class&#39;, &#39;arale/events/1.1.0/events&#39;, &#39;./b&#39;], function(require, exports, module){
+  require(&#39;arale/base/1.1.1/base&#39;);
+  require(&#39;./b&#39;);
+  module.exports = &#39;a&#39;;
+});
+define(&#39;arale/widget/1.1.0/b&#39;, [], function(require, exports, module){
+  module.exports = &#39;b&#39;;
+});
+
+// b.js
+define(&#39;arale/widget/1.1.0/b&#39;, [], function(require, exports, module){
+  module.exports = &#39;b&#39;;
+});</pre><p>最终 -debug 文件输出到 .build/dist 中，而源文件输出到 .build/tmp 下，这是为了压缩做准备。</p>
+<p><code>uglify:js</code> 压缩 .build/tmp 下的 js 输出到 .build/dist 下。</p>
+<h2 id="css-文件">css 文件</h2><p>css 文件和 js 一样，也有相对模块和绝对模块，通过 <code>@import</code> 引用依赖。</p>
+<div class="highlight"><pre><code class="css">// a.css
+@import "base"
+@import "./b.css"
+
+// b.css
+body {background: red;}</code></pre></div><p><code>transport:src</code> 会对源文件进行转换，主要给文件加上 define 和转换 import，输出到 .build/src 中。</p>
+<div class="highlight"><pre><code class="css">// a.css
+/*! define arale/widget/1.2.1/a.css */
+/*! import alice/base/1.0.0/base.css */
+/*! import ./b.css */
+@import "base"
+@import "./b.css"
+
+// b.css
+/*! define arale/widget/1.2.1/b.css */
+body {background: red;}</code></pre></div><p><code>concat:css</code> 将依赖的 css 合并到一个 css 中，输出到 .build/tmp 中，合并过程中会将每个 import 转换成 block。</p>
+<div class="highlight"><pre><code class="css">// a.css
+/*! define arale/widget/1.0.0/a.css */
+/*! block alice/base/1.0.0/base-debug.css */
+...
+/*! endblock alice/base/1.0.0/base-debug.css */
+/*! block arale/widget/1.0.0/b-debug.css */
+body {
+  background: red;
+}
+/*! endblock arale/widget/1.0.0/b-debug.css */
+
+// b.css
+/*! define arale/widget/1.0.0/b.css */
+body {background: red;}</code></pre></div><p><code>cssmin:css</code> 压缩 .build/tmp 下的 css 输出到 .build/dist 下。</p>
+<h2 id="js-依赖的-css-文件">js 依赖的 css 文件</h2><p>这里是指在 js 文件中所 require 的 css 文件，这种情况与直接 output 的 css 有所不同。</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  require(<span class="string">'./b.css'</span>);
+  module.exports = <span class="string">'a'</span>;
+});
+
+<span class="comment">// b.css</span>
+body {background: red;}</code></pre></div><p>前几个步骤与上面是相同的，js 做 <code>transport:src</code> 处理，css 做 <code>transport:src</code> <code>concat:css</code> 处理</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="string">'arale/widget/1.1.0/a'</span>, [<span class="string">'./b.css'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  require(<span class="string">'./b.css'</span>);
+  module.exports = <span class="string">'a'</span>;
+});
+
+<span class="comment">// b.css</span>
+<span class="comment">/*! define arale/widget/1.0.0/b.css */</span>
+body {background: red;}</code></pre></div><p>接下来会做 <code>transport:css</code> 处理，也就是将 ./b.css 转换成 ./b.css.js。</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="string">'arale/widget/1.1.0/a'</span>, [<span class="string">'./b.css'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  require(<span class="string">'./b.css'</span>);
+  module.exports = <span class="string">'a'</span>;
+});
+
+<span class="comment">// b.css.js</span>
+define(<span class="string">'arale/widget/1.0.0/b.css'</span>, [], <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+    seajs.importStyle(<span class="string">'body {background: red;}'</span>);
+});</code></pre></div><p>接下来做 <code>concat:js</code> <code>uglify:js</code> 都与一般 js 相同。</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="string">'arale/widget/1.1.0/a'</span>, [<span class="string">'./b.css'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  require(<span class="string">'./b.css'</span>);
+  module.exports = <span class="string">'a'</span>;
+});
+define(<span class="string">'arale/widget/1.0.0/b.css'</span>, [], <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+    seajs.importStyle(<span class="string">'body {background: red;}'</span>);
+});</code></pre></div><h2 id="stylus-文件">stylus 文件</h2><p>暂时还没支持 less 和 sass，但原理是一样的，有需求可以支持。</p>
+<p><code>stylus</code> 将 src 下的 styl 文件转换成 css 输出到 .build/stylus，然后再 <code>transport:stylus</code> 到 .build/src 下。</p>
+<p>之后的操作就跟 css 一样了。</p>
+<h2 id="handlebars-模板文件">handlebars 模板文件</h2><p>在编译的时候会将 handlebars 模板进行预编译，可提高运行时的性能。</p>
+<div class="highlight"><pre><code class="javascript">// a.js
+define(function(require, exports, module){
+  require('./b.handlebars');
+  module.exports = 'a';
+});
+
+// b.handlebars
+  &lt;ul&gt;
+    {{#each list}}
+     &lt;li&gt;{{content}}&lt;li&gt;
+    {{/each}}
+  &lt;/ul&gt;</code></pre></div><p><code>transport:src</code> 进行预编译生成 b.handlebars.js</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">// a.js</span>
+define(<span class="string">'arale/widget/1.1.0/a'</span>, [<span class="string">'./b.handlebars'</span>], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span>{</span>
+  require(<span class="string">'./b.handlebars'</span>);
+  module.exports = <span class="string">'a'</span>;
+});
+
+<span class="comment">// b.handlebars.js</span>
+define(<span class="string">"arale/widget/1.1.0/b.handlebars"</span>, [<span class="string">"gallery/handlebars/1.0.2/runtime"</span> ], <span class="function"><span class="keyword">function</span><span class="params">(require, exports, module)</span> {</span>
+    <span class="keyword">var</span> Handlebars = require(<span class="string">"gallery/handlebars/1.0.2/runtime"</span>);
+    ...
+});</code></pre></div><p>接下来做 concat:js uglify:js 都与一般 js 相同。</p>
+</div>
+</div>
+</div>
+    </div>
+    <div class="footer">
+      <p class="copyright">powered by <a href="http://lab.lepture.com/nico/">nico</a> 0.5.0</p>
+    </div>
+    <script src="http://static.alipayobjects.com/seajs/1.2.1/sea.js" data-main="../static/one.js"></script>
+    <div id="extra">
+        <a href="https://github.com/spmjs/spm2" target="_blank">
+            <img src="https://i.alipayobjects.com/e/201211/1dbSqT9ykm.png" width="149" height="149" alt="Fork me on GitHub"></a>
+    </div>
+    <!--<div class="github"><a class="github-link" href="https://github.com/spmjs/spm2">Fork me on GitHub</a></div>-->
+  </body>
+</html>
