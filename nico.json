@@ -1,0 +1,19 @@
+{
+  "source": "post",
+  "output": "_site",
+  "permalink": "{{directory}}/{{filename}}",
+  "sitename": "spmjs",
+  "github": "https://github.com/spmjs/spm2",
+  "google": "UA-38943643-2",
+  "navigation": [
+    {"link": "doc/index.html", "title": "使用文档"},
+    {"link": "cli/config.html", "title": "命令集"},
+    {"link": "api/index.html", "title": "开发者文档"}
+  ],
+  "writers": [
+    "nico.PageWriter",
+    "nico.PostWriter",
+    "nico.FileWriter",
+    "nico.StaticWriter"
+  ]
+}

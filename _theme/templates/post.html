@@ -1,0 +1,33 @@
+{%- extends "layout.html" -%}
+{%- block title %}{{post.title}}{% endblock %}
+
+{%- block sidebar %}
+<div class="sidebar">
+  {%- for category in resource.posts|category(post.directory) %}
+  <ul>
+    <li class="sidebar-category">{{category.title}}</li>
+    {%- for item in category.posts %}
+    <li{%if item.id == post.id%} class="sidebar-current"{%endif%}><a href="./{{item.meta.filename}}">{{item.title}}</a></li>
+    {%- endfor %}
+  </ul>
+  {%- endfor %}
+</div>
+{%- endblock %}
+
+{%- block document %}
+<div class="hentry typo">
+  <h1 class="entry-title">{{post.title}}</h1>
+  {%- if post.description %}
+  <blockquote class="entry-description">{{post.description}}</blockquote>
+  {%- endif %}
+
+  {%- if post.toc %}
+  <div class="entry-toc">
+    <h3>Table of Contents</h3>
+    {{post.toc}}
+  </div>
+  {%- endif %}
+
+  <div class="entry-content">{{post.html|linkfix}}</div>
+</div>
+{% endblock -%}

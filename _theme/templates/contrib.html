@@ -1,0 +1,27 @@
+{%- extends "layout.html" -%}
+{%- block title %}Contributions{% endblock %}
+{%- block afterstyle %}
+<style type="text/css">
+  .entry-list li {
+    position: relative;
+  }
+  .entry-list li span {
+    position: absolute;
+    right: 10px;
+  }
+</style>
+{%- endblock %}
+
+{%- block document %}
+<h1 class="entry-title">{{post.title}}</h1>
+<p>{{post.description}}</p>
+<div class="entry-content">{{post.html}}</div>
+<ol class="entry-list">
+  {%- for item in resource.posts %}
+  {%- if item.meta.directory == 'contrib' and item.meta.filename != 'index' %}
+  {%- set p = item|read %}
+  <li><a href="{{permalink_url(p)}}">{{p.title}}</a> <span>{{p.meta.author}}</span></li>
+  {%- endif %}
+  {%- endfor %}
+</ol>
+{% endblock -%}
